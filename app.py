@@ -494,12 +494,12 @@ elif mode == "interview":
         offense_text = info["offense_text"]
         core_claim = info["core_claim"]
 
+        name = info.get("name", "(이름 미지정)")
+
         st.title("사건 관련 질문 안내")
 
-        st.markdown("#### 핵심 주장")
+        st.markdown(f"""#### {name} 님의 핵심 주장""")
         st.info(core_claim)
-
-        name = info.get("name", "(이름 미지정)")
 
         st.markdown(
             f"""
