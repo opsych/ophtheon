@@ -154,7 +154,7 @@ def make_core_claim_suspect(offense_text: str) -> str:
 
 
 def make_core_claim_victim(offense_text: str) -> str:
-    return f"저는 {offense_text}을/를 당했습니다."
+    return f"저는 {offense_text} 당했습니다."
 
 
 def make_r_questions_suspect(offense_text: str) -> list[str]:
