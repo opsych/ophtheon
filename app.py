@@ -2,6 +2,38 @@
 import streamlit as st
 import pandas as pd
 
+import streamlit as st
+
+st.markdown("""
+<style>
+
+/* 1) 영어 범위 (Basic Latin + Latin-1) → Sora 전용 */
+@font-face {
+    font-family: 'SoraSubset';
+    src: url('https://fonts.gstatic.com/s/sora/v7/xMQbuFLW-ZB_dEsA2ovSMQ.woff2') format('woff2');
+    unicode-range: U+0000-00FF; /* 영어/기본 라틴 문자 */
+}
+
+/* 2) 한글 범위 → Nanum Gothic 전용 */
+@font-face {
+    font-family: 'NanumGothicSubset';
+    src: url('https://fonts.gstatic.com/s/nanumgothic/v21/PNYhP5QmY_zk80u7Fu7wu3c.ttf') format('truetype');
+    unicode-range: U+AC00-D7A3; /* 한글 음절 영역 */
+}
+
+/* 3) 전체 페이지에 적용 */
+html, body, [class*="css"] {
+    font-family: 'SoraSubset', 'NanumGothicSubset', sans-serif !important;
+}
+
+/* 4) 제목에도 동일하게 적용 */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'SoraSubset', 'NanumGothicSubset', sans-serif !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="Ophtheon — Prototype v0",
     page_icon="👁️",
