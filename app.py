@@ -122,29 +122,6 @@ mode = st.session_state["mode"]
 
 
 # ---------------------------------------------------------
-# 스크롤 맨 위로 올리기 (페이지 전환 시)
-# ---------------------------------------------------------
-
-
-def scroll_top_now():
-    components.html(
-        """
-        <script>
-        // 현재 프레임과 부모 프레임 모두 맨 위로
-        try {
-            window.scrollTo(0, 0);
-        } catch (e) {}
-
-        try {
-            window.parent.scrollTo(0, 0);
-        } catch (e) {}
-        </script>
-        """,
-        height=0,
-    )
-# ---------------------------------------------------------
-
-# ---------------------------------------------------------
 # 공용 함수
 # ---------------------------------------------------------
 def goto(next_step: str):
@@ -411,8 +388,6 @@ elif mode == "interview":
     elif step == "interview_principle":
         info = st.session_state["case_info"]
         name = info.get("name", "(이름 미지정)")
-
-        st.title("검사 소개 및 설명")
 
         st.markdown(
             f"""
