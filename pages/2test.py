@@ -205,7 +205,7 @@ elif step == "preview":
                 st.session_state["test_step"] = "upload"
                 st.rerun()
         with col2:
-            if st.button("검사 시작 준비하기 ➜"):
+            if st.button("검사 진행"):
                 st.session_state["test_step"] = "run"
                 st.session_state["exam_started"] = False
                 st.rerun()
@@ -221,7 +221,7 @@ elif step == "run":
             st.session_state["test_step"] = "upload"
             st.rerun()
     else:
-        st.title("② 검사 시행 — 실시간 진행")
+        st.title("검사 시행 — 실시간 진행")
 
         st.markdown(
             """
