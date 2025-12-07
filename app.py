@@ -464,7 +464,7 @@ elif mode == "interview":
 
             for i, q in enumerate(r_questions, start=1):
                 ans = st.radio(
-                    f"R{i}. {q}",
+                    f"{q}",
                     ["선택 안 함", "예", "아니오"],
                     index=0,
                     key=f"r_practice_{i}",
@@ -757,7 +757,7 @@ elif mode == "interview":
 
             # I / SR
             ans_I = st.radio(
-                f"I1. {qs['I']}",
+                qs['I'],
                 ["선택 안 함", "예", "아니오"],
                 index=0,
                 key="final_I",
@@ -769,7 +769,7 @@ elif mode == "interview":
                 final_all_correct = False
 
             ans_SR = st.radio(
-                f"SR1. {qs['SR']}",
+                qs['SR'],
                 ["선택 안 함", "예", "아니오"],
                 index=0,
                 key="final_SR",
@@ -783,7 +783,7 @@ elif mode == "interview":
             # N (3)
             for i, q in enumerate(qs["N"], start=1):
                 ans = st.radio(
-                    f"N{i}. {q}",
+                    q,
                     ["선택 안 함", "예", "아니오"],
                     index=0,
                     key=f"final_N_{i}",
@@ -797,7 +797,7 @@ elif mode == "interview":
             # C (3)
             for i, q in enumerate(qs["C"], start=1):
                 ans = st.radio(
-                    f"C{i}. {q}",
+                    q,
                     ["선택 안 함", "예", "아니오"],
                     index=0,
                     key=f"final_C_{i}",
@@ -811,7 +811,7 @@ elif mode == "interview":
             # R (3) — 역할에 따라 기대 응답 다름
             for i, q in enumerate(qs["R"], start=1):
                 ans = st.radio(
-                    f"R{i}. {q}",
+                    q,
                     ["선택 안 함", "예", "아니오"],
                     index=0,
                     key=f"final_R_{i}",
