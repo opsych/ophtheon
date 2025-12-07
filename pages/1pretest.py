@@ -10,24 +10,24 @@ st.markdown(
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-/* 전체 폰트 패밀리 */
+/* 기본 폰트 패밀리 */
 html, body {
     font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
 }
 
-/* 본문 영역(block-container) 기본 폰트 크기 */
+/* 본문 전체 기본 폰트 크기 ↓ (18 → 16으로 감소) */
 .block-container {
-    font-size: 18px !important;
-    line-height: 1.6 !important;
+    font-size: 16px !important;
+    line-height: 1.55 !important;
 }
 
-/* 제목 크기 */
-h1 { font-size: 32px !important; }
-h2 { font-size: 28px !important; }
-h3 { font-size: 24px !important; }
-h4 { font-size: 20px !important; }
+/* 제목 크기 조정 */
+h1 { font-size: 30px !important; }
+h2 { font-size: 26px !important; }
+h3 { font-size: 22px !important; }
+h4 { font-size: 18px !important; }
 
-/* 본문 안의 라디오/체크박스/입력창 등 */
+/* 본문 UI 요소 폰트 크기 ↓ (統一 16px) */
 .block-container .stRadio label,
 .block-container .stRadio div,
 .block-container .stCheckbox label,
@@ -37,12 +37,12 @@ h4 { font-size: 20px !important; }
 .block-container .stSlider label,
 .block-container .stSlider span,
 .block-container .stAlert > div {
-    font-size: 18px !important;
+    font-size: 16px !important;
 }
 
-/* 사이드바는 기본 크기 유지 */
+/* 사이드바는 기본(작은) 크기로 유지 */
 [data-testid="stSidebar"] * {
-    font-size: 16px !important;
+    font-size: 15px !important;
     line-height: 1.4 !important;
 }
 </style>
