@@ -147,7 +147,7 @@ step = st.session_state["test_step"]
 
 # ---------- (1) 텍스트 파일 업로드 ----------
 if step == "upload":
-    st.title("② 검사 시행 — 질문 세트 불러오기")
+    st.title("검사 시행 — 질문 세트 불러오기")
 
     st.markdown(
         """
