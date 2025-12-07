@@ -5,53 +5,45 @@ import io
 # ---------------------------------------------------------
 # 1. 공통 스타일 (폰트)
 # ---------------------------------------------------------
-st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
-    }
+/* 기본 폰트 적용 */
+html, body {
+    font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
+}
 
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
-        font-weight: 600 !important;
-        margin-top: 0.5em !important;
-        margin-bottom: 0.5em !important;
-    }
+/* 본문(text-container)만 폰트 크기 18px */
+.block-container {
+    font-size: 18px !important;
+    line-height: 1.6 !important;
+}
 
-    html, body, p, div, span, label {
-        font-size: 18px !important;
-        line-height: 1.6 !important;
-    }
+/* 제목 크기 */
+h1 { font-size: 32px !important; }
+h2 { font-size: 28px !important; }
+h3 { font-size: 24px !important; }
+h4 { font-size: 20px !important; }
 
-    h1 { font-size: 32px !important; }
-    h2 { font-size: 28px !important; }
-    h3 { font-size: 24px !important; }
-    h4 { font-size: 20px !important; }
+/* 라디오, 체크박스, 입력창 등 본문 UI */
+.block-container .stRadio label,
+.block-container .stRadio div,
+.block-container .stCheckbox label,
+.block-container .stTextInput input,
+.block-container .stSelectbox div,
+.block-container .stTextArea textarea,
+.block-container .stSlider label,
+.block-container .stSlider span,
+.block-container .stAlert > div {
+    font-size: 18px !important;
+}
 
-    .stRadio > label, .stRadio div { font-size: 18px !important; }
-    .stCheckbox label { font-size: 18px !important; }
-
-    .stTextInput input,
-    .stSelectbox div,
-    .stTextArea textarea {
-        font-size: 18px !important;
-    }
-
-    .stSlider label, .stSlider span {
-        font-size: 18px !important;
-    }
-
-    .stAlert > div {
-        font-size: 18px !important;
-        line-height: 1.5 !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+/* -------- 사이드바는 기본 크기로 유지 -------- */
+[data-testid="stSidebar"] * {
+    font-size: 16px !important;   /* 원래 Streamlit 기본 크기 */
+    line-height: 1.4 !important;
+}
+</style>
 
 # ---------------------------------------------------------
 # 2. 상태 초기화
