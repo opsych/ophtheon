@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import random
 import io
+import streamlit.components.v1 as components
 
 # ---------------------------------------------------------
 # 0. 페이지 설정
@@ -118,27 +119,32 @@ if "data" not in st.session_state:
 
 step = st.session_state["step"]
 mode = st.session_state["mode"]
+# ---------------------------------------------------------
+# 스크롤 맨 위로 올리기 (페이지 전환 시)
+# ---------------------------------------------------------
+def scroll_to_top():
+    components.html(
+        """
+        <script>
+            window.scrollTo(0, 0);
+        </script>
+        """,
+        height=0,
+    )
 
+# step이 바뀌어 rerun 된 경우에만 실행
+if st.session_state.get("force_scroll_top", False):
+    scroll_to_top()
+    st.session_state["force_scroll_top"] = False
 # ---------------------------------------------------------
-# 항상 페이지 맨 위로 스크롤
-# ---------------------------------------------------------
-st.markdown(
-    """
-    <script>
-    const mainSection = window.parent.document.querySelector('section.main');
-    if (mainSection) {
-        mainSection.scrollTo(0, 0);
-    }
-    </script>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 # ---------------------------------------------------------
 # 공용 함수
 # ---------------------------------------------------------
 def goto(next_step: str):
     st.session_state["step"] = next_step
+    st.session_state["force_scroll_top"] = True  # 다음 렌더에서 맨 위로
     st.rerun()
 
 
@@ -156,6 +162,7 @@ def reset_all():
             del st.session_state[key]
     st.session_state["mode"] = "none"
     st.session_state["step"] = "home"
+    st.session_state["force_scroll_top"] = True  # 홈으로 갈 때도 맨 위로
     st.rerun()
 
 
