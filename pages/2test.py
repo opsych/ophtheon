@@ -1,4 +1,3 @@
-# 2test.py
 import streamlit as st
 import random
 import io
@@ -151,7 +150,7 @@ if step == "upload":
 
     st.markdown(
         """
-사전면담(pretest) 단계에서 생성한  
+pretest 단계에서 생성한  
 **ophtheon_question_set.txt** 파일을 업로드해 주세요.
         """
     )
@@ -205,7 +204,7 @@ elif step == "preview":
                 st.session_state["test_step"] = "upload"
                 st.rerun()
         with col2:
-            if st.button("검사 진행"):
+            if st.button("검사 시행"):
                 st.session_state["test_step"] = "run"
                 st.session_state["exam_started"] = False
                 st.rerun()
@@ -259,12 +258,12 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("← 질문 세트 확인으로 돌아가기"):
+            if st.button("←"):
                 st.session_state["test_step"] = "preview"
                 st.session_state["exam_started"] = False
                 st.rerun()
         with col2:
-            if st.button("검사 시작 ▶") and not exam_started:
+            if st.button("검사 시작") and not exam_started:
                 st.session_state["exam_started"] = True
                 st.rerun()
 
