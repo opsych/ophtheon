@@ -74,7 +74,7 @@ step = st.session_state["step"]
 def goto(next_step: str):
     """다음 단계로 이동하고 앱을 rerun."""
     st.session_state["step"] = next_step
-    st.experimental_rerun()
+    st.rerun()
 
 
 # ---------------------------------------------------------
