@@ -499,6 +499,8 @@ elif mode == "interview":
         st.markdown("#### 핵심 주장")
         st.info(core_claim)
 
+        name = info.get("name", "(이름 미지정)")
+
         st.markdown(
             f"""
         이제 이번 사건과 직접 관련된 **사건 관련 질문** 을 안내해 드리겠습니다.
