@@ -153,8 +153,8 @@ def make_core_claim_suspect(offense_text: str) -> str:
     return f"저는 {offense_text}한 사실이 없습니다."
 
 
-def make_core_claim_victim(offense_text: str) -> str:
-    return f"저는 {offense_text} 피해를 당했습니다."
+# def make_core_claim_victim(offense_text: str) -> str:
+#    return f"저는 {offense_text} 피해를 당했습니다."
 
 
 def make_r_questions_suspect(offense_text: str) -> list[str]:
@@ -165,12 +165,12 @@ def make_r_questions_suspect(offense_text: str) -> list[str]:
     ]
 
 
-def make_r_questions_victim(offense_text: str) -> list[str]:
-    return [
-        f"당신은 그 당시 피의자로부터 {offense_text} 피해를 입었습니까?",
-        f"당신은 피의자에게 직접 {offense_text} 피해를 당한 적이 있습니까?",
-        f"당신은 피의자로부터 {offense_text} 피해를 입은 것이 사실입니까?",
-    ]
+# def make_r_questions_victim(offense_text: str) -> list[str]:
+#    return [
+#        f"당신은 그 당시 피의자로부터 {offense_text} 피해를 입었습니까?",
+#        f"당신은 피의자에게 직접 {offense_text} 피해를 당한 적이 있습니까?",
+#        f"당신은 피의자로부터 {offense_text} 피해를 입은 것이 사실입니까?",
+#    ]
 
 
 # I / SR 질문 텍스트 (고정)
@@ -262,10 +262,11 @@ elif mode == "interview":
 
         role = st.radio(
             "이번 사건에서 본인의 위치를 선택해 주세요.",
-            ["피의자", "피해자"],
+            ["용의자", "피의자", "피고인"],
             horizontal=True,
         )
-        role_key = "suspect" if role == "피의자" else "victim"
+        if role in ["용의자", "피의자", "피고인"]:
+            role_key = "suspect"
 
         offense_category = st.selectbox(
             "사건의 대분류를 선택해 주세요.",
