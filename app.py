@@ -816,7 +816,7 @@ elif mode == "interview":
                 goto("interview_final_practice")
 
     # ---------- 14) 11문항 최종 연습 ----------
-        
+        # ---------- 14) 11문항 최종 연습 ----------
     elif step == "interview_final_practice":
         qs = st.session_state.get("question_set", None)
         info = st.session_state.get("case_info", {})
@@ -831,7 +831,8 @@ elif mode == "interview":
         else:
             st.markdown(
                 """
-                실제 검사라고 생각하시고, 각 문항에 대해 차분히 응답해주세요.
+                실제 검사라고 생각하시고, 각 문항에 대해 차분히 응답해 주세요.  
+                (문항은 무작위 순서로 제시됩니다.)
                 """
             )
 
@@ -880,20 +881,26 @@ elif mode == "interview":
                     "expected": expected,
                 })
 
-            # 무작위 순서로 셔플
-            random.shuffle(question_items)
+            # ❗ 셔플 순서: 처음 들어올 때만 생성하고, 이후에는 유지
+            if "final_shuffle_order" not in st.session_state:
+                order = list(range(len(question_items)))
+                random.shuffle(order)
+                st.session_state["final_shuffle_order"] = order
+
+            order = st.session_state["final_shuffle_order"]
 
             final_all_answered = True
             final_all_correct = True
             r_conflict = False  # 사건 질문(R)에서 핵심 주장과 어긋나는 응답 여부
 
-            # 셔플된 순서대로 라디오 표시
-            for item in question_items:
+            # 셔플된 순서대로 라디오 표시 (question_items 자체는 고정, 순서만 order로 제어)
+            for idx in order:
+                item = question_items[idx]
                 ans = st.radio(
                     item["question"],
                     ["선택 안 함", "예", "아니오"],
                     index=0,
-                    key=item["key"],
+                    key=item["key"],  # key는 항상 동일해야 상태 유지됨
                 )
 
                 if ans == "선택 안 함":
@@ -907,6 +914,9 @@ elif mode == "interview":
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("←"):
+                    # 이전 단계로 돌아갈 때 셔플 순서 초기화
+                    if "final_shuffle_order" in st.session_state:
+                        del st.session_state["final_shuffle_order"]
                     goto("interview_final_intro")
             with col2:
                 if st.button("→"):
@@ -921,8 +931,10 @@ elif mode == "interview":
                         else:
                             st.error("Ophtheon 11문항은 설정된 규칙에 따라 응답해야 검사를 완료할 수 있습니다.")
                     else:
+                        # 연습 완료 후 다음에 다시 올 경우를 대비해 순서 초기화
+                        if "final_shuffle_order" in st.session_state:
+                            del st.session_state["final_shuffle_order"]
                         goto("interview_end")
-    
 
     # ---------- 15) 면담 종료 + 프린트용 질문 세트 ----------
     elif step == "interview_end":
