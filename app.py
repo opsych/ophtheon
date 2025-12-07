@@ -307,7 +307,7 @@ elif mode == "interview":
             "caffeine": caffeine,
         })
         
-        st.markdown("###검사 동의")
+        st.markdown("### 검사 동의")
 
         agree = st.radio("검사 진행에 동의하십니까?", ["동의함", "동의하지 않음"], horizontal=True)
 
