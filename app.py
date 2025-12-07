@@ -893,20 +893,20 @@ elif mode == "interview":
 
             # 화면에 보기 좋게 출력
             st.markdown("**기초 질문**")
-            st.write(f"I1. {qs['I']}")
-            st.write(f"SR1. {qs['SR']}")
+            st.write(f"{qs['I']}")
+            st.write(f"{qs['SR']}")
 
             st.markdown("**인적 사항 질문**")
             for i, q in enumerate(qs["N"], start=1):
-                st.write(f"N{i}. {q}")
+                st.write(f"{q}")
 
             st.markdown("**성향 질문**")
             for i, q in enumerate(qs["C"], start=1):
-                st.write(f"C{i}. {q}")
+                st.write(f"{q}")
 
             st.markdown("**사건 관련 질문**")
             for i, q in enumerate(qs["R"], start=1):
-                st.write(f"R{i}. {q}")
+                st.write(f"{q}")
 
             # 텍스트 파일로도 저장할 수 있게 구성
             lines = []
