@@ -271,7 +271,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 reset_all()
         with col2:
             if st.button("➜"):
@@ -336,7 +336,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_info")
         with col2:
             if st.button("➜"):
@@ -364,7 +364,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_principle")
         with col2:
             if st.button("➜"):
@@ -396,7 +396,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_isr_intro")
         with col2:
             if st.button("➜"):
@@ -440,7 +440,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_isr_practice")
         with col2:
             if st.button("➜"):
@@ -456,7 +456,7 @@ elif mode == "interview":
 
         if not r_questions:
             st.error("사건 관련 질문이 생성되지 않았습니다. 이전 단계로 돌아가 주세요.")
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_r_intro")
         else:
             all_answered = True
@@ -479,7 +479,7 @@ elif mode == "interview":
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("⬅︎"):
+                if st.button("←"):
                     goto("interview_r_intro")
             with col2:
                 if st.button("다음으로 ➜"):
@@ -517,7 +517,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_r_practice")
         with col2:
             if st.button("➜"):
@@ -544,7 +544,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_dlcq_intro")
         with col2:
             if st.button("➜"):
@@ -563,7 +563,7 @@ elif mode == "interview":
 
         if not indices:
             st.error("선택된 성향 질문이 없습니다. 성향 설문 단계로 돌아가 주세요.")
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_dlcq")
         else:
             st.markdown(
@@ -582,7 +582,7 @@ elif mode == "interview":
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("⬅︎"):
+                if st.button("←"):
                     goto("interview_dlcq")
             with col2:
                 if st.button("➜"):
@@ -617,7 +617,7 @@ elif mode == "interview":
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("⬅︎"):
+                if st.button("←"):
                     goto("interview_c_intro")
             with col2:
                 if st.button("➜"):
@@ -644,7 +644,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_c_practice")
         with col2:
             if st.button("➜"):
@@ -684,7 +684,7 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_n_intro")
         with col2:
             if st.button("➜"):
@@ -732,10 +732,10 @@ elif mode == "interview":
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎ 인적 사항 질문 연습으로 돌아가기"):
+            if st.button("←"):
                 goto("interview_n_practice")
         with col2:
-            if st.button("11문항 최종 연습 시작하기 ➜"):
+            if st.button("➜"):
                 goto("interview_final_practice")
 
     # ---------- 14) 11문항 최종 연습 ----------
@@ -748,7 +748,7 @@ elif mode == "interview":
 
         if not qs:
             st.error("질문 세트가 생성되지 않았습니다. 이전 단계로 돌아가 주세요.")
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_final_intro")
         else:
             final_all_answered = True
@@ -827,7 +827,7 @@ elif mode == "interview":
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("⬅︎"):
+                if st.button("←"):
                     goto("interview_final_intro")
             with col2:
                 if st.button("➜"):
@@ -922,7 +922,7 @@ elif mode == "interview":
         st.markdown("---")
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎"):
+            if st.button("←"):
                 goto("interview_final_practice")
         with col2:
             if st.button("Home"):
