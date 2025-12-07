@@ -159,9 +159,9 @@ def make_core_claim_victim(offense_text: str) -> str:
 
 def make_r_questions_suspect(offense_text: str) -> list[str]:
     return [
-        f"당신은 그 당시 {offense_text}을/를 한 사실이 있습니까?",
+        f"당신은 그 당시 {offense_text}한 사실이 있습니까?",
         f"당신은 직접 {offense_text}한 적이 있습니까?",
-        f"당신이 {offense_text}을/를 한 것이 사실입니까?",
+        f"당신이 {offense_text}한 것이 사실입니까?",
     ]
 
 
