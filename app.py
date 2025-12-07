@@ -23,23 +23,23 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.page_link(
-        "pages/pre-test.py",
+        "pages/1.pre-test.py",
         label="① 검사 전 안내 및 연습",
-        icon="🧪",
+        icon="📝",
         use_container_width=True,
     )
 
 with col2:
     st.page_link(
-        "pages/exam.py",
-        label="② 실제 검사 시행",
-        icon="🎧",
+        "pages/2.test.py",
+        label="② 검사 시행",
+        icon="🕵🏻‍♂️",
         use_container_width=True,
     )
 
 with col3:
     st.page_link(
-        "pages/score.py",
+        "pages/3.score.py",
         label="③ 데이터 업로드·자동 판정",
         icon="📊",
         use_container_width=True,
