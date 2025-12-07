@@ -151,7 +151,7 @@ if step == "upload":
     st.markdown(
         """
 pretest 단계에서 생성한  
-**ophtheon_question_set.txt** 파일을 업로드해 주세요.
+텍스트(.txt) 파일을 업로드해 주세요.
         """
     )
 
