@@ -184,9 +184,9 @@ def make_core_claim_victim(offense_text: str) -> str:
 
 def make_r_questions_suspect(offense_text: str) -> list[str]:
     return [
-        f"당신은 그 당시 피해자에게 {offense_text}을/를 한 사실이 있습니까?",
-        f"당신은 직접 피해자를 {offense_text}한 적이 있습니까?",
-        f"당신이 피해자에게 {offense_text}을/를 한 것이 사실입니까?",
+        f"당신은 그 당시 {offense_text}을/를 한 사실이 있습니까?",
+        f"당신은 직접 {offense_text}한 적이 있습니까?",
+        f"당신이 {offense_text}을/를 한 것이 사실입니까?",
     ]
 
 
@@ -295,6 +295,7 @@ elif mode == "interview":
         offense_category = st.selectbox(
             "사건의 대분류를 선택해 주세요.",
             [
+                "과제",
                 "성범죄",
                 "폭력범죄",
                 "재산범죄",
@@ -304,7 +305,6 @@ elif mode == "interview":
                 "성매매",
                 "마약",
                 "기타",
-                "과제",
             ],
         )
 
@@ -318,6 +318,11 @@ elif mode == "interview":
                 "사건의 세부유형을 선택해 주세요.",
                 ["폭행", "상해", "협박", "체포·감금", "기타"],
             )
+        elif offense_category == "과제":
+            offense_type = st.selectbox(
+                "사건의 세부유형을 선택해 주세요.",
+                ["빨간 버튼 클릭"],
+            )
         else:
             offense_type = st.selectbox(
                 "사건의 세부유형을 선택해 주세요.",
@@ -328,7 +333,7 @@ elif mode == "interview":
         if offense_type == "기타":
             offense_free = st.text_input(
                 "어떤 행위에 관한 사건인지 간단히 적어주세요.",
-                placeholder="예) 부정 행위, 금품 갈취, 사기 판매, 주거 침입, ...",
+                placeholder="예) 금품 갈취, 사기 판매, 주거 침입, ...",
             )
 
         if offense_type == "기타":
