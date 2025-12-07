@@ -925,7 +925,7 @@ elif mode == "interview":
             buffer = io.BytesIO(summary_text.encode("utf-8"))
 
             st.download_button(
-                label="질문 세트 텍스트 다운로드 (.txt)",
+                label="질문 다운로드 (.txt)",
                 data=buffer,
                 file_name="ophtheon_question_set.txt",
                 mime="text/plain",
