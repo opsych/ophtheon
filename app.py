@@ -187,7 +187,7 @@ if step == "home":
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("사전 면담 및 질문 연습", use_container_width=True):
+        if st.button("검사 전 안내 및 질문 연습", use_container_width=True):
             st.session_state["mode"] = "interview"
             st.session_state["step"] = "interview_info"
             st.rerun()
