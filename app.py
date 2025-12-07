@@ -385,7 +385,7 @@ elif mode == "interview":
         info = st.session_state["case_info"]
         r_questions = info.get("R_questions", [])
 
-        st.title("4-2. 사건 관련 질문 내용 확인 및 연습")
+        st.title("4-1. 사건 관련 질문 내용 확인 및 연습")
 
         if not r_questions:
             st.error("사건 관련 질문이 생성되지 않았습니다. 이전 단계로 돌아가 주세요.")
@@ -400,7 +400,7 @@ elif mode == "interview":
                 본인의 상황에 따라 **'예' 또는 '아니오'** 로 답변하게 됩니다.
 
                 지금은 연습 단계이므로,  
-                각 질문에 대해 스스로 생각해 보고 **직접 선택**해 주세요.
+                각 질문에 대해 스스로 생각해 보고 직접 선택해 주세요.
                 """
             )
 
@@ -459,15 +459,47 @@ elif mode == "interview":
             if st.button("⬅︎ 사건 관련 질문 연습으로 돌아가기"):
                 goto("interview_r_practice")
         with col2:
-            if st.button("비교질문 연습으로 ➜"):
+            if st.button("비교질문 안내 보기 ➜"):
                 if not any(answers.values()):
                     st.error("적어도 한 문항 이상 '예'로 응답해야 비교질문을 만들 수 있습니다.")
                 else:
                     cq_indices = pick_cq_indices(answers, k=3)
                     st.session_state["cq_indices"] = cq_indices
+                    goto("interview_cq_preview")
+
+    # ---------- 6) 비교질문(C) 안내 ----------
+    elif step == "interview_cq_preview":
+        indices = st.session_state.get("cq_indices", [])
+
+        st.title("6. 비교질문(C) 안내")
+
+        if not indices:
+            st.error("선택된 비교질문이 없습니다. 성향 설문 단계로 돌아가 주세요.")
+            if st.button("성향 설문으로 돌아가기"):
+                goto("interview_dlcq")
+        else:
+            st.markdown(
+                """
+                방금 **'예'라고 응답하신 문항들** 중 일부는 검사에서 **비교질문(C)** 으로 사용됩니다.
+
+                그러나 **본 검사에서는**, 이러한 질문들에 대해서도  
+                모두 **'아니오'** 라고 답변해 주셔야 합니다.
+
+                '예'라고 응답해주신 문항 중 **세 가지를 골라 질문** 드리겠습니다.  
+                **다음 연습 화면에서** 세 가지 질문에 대해 생각한 뒤,  
+                직접 **'아니오'** 를 선택해 주세요.
+                """
+            )
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("⬅︎ 성향 설문으로 돌아가기"):
+                    goto("interview_dlcq")
+            with col2:
+                if st.button("비교질문 연습으로 ➜"):
                     goto("interview_cq_practice")
 
-    # ---------- 6) 비교질문(C) 연습 ----------
+    # ---------- 6-1) 비교질문(C) 연습 ----------
     elif step == "interview_cq_practice":
         indices = st.session_state.get("cq_indices", [])
         if not indices:
@@ -475,17 +507,15 @@ elif mode == "interview":
             if st.button("성향 설문으로 돌아가기"):
                 goto("interview_dlcq")
         else:
-            st.title("6. 비교질문(C) 연습")
+            st.title("6-1. 비교질문(C) 연습")
 
             st.markdown(
                 """
-                방금 '예'라고 응답하신 문항들 중 일부는 검사에서 **비교질문(C)** 으로 사용됩니다.  
+                아래 세 가지 질문은 방금 '예'라고 응답하신 문항 중에서  
+                이번 검사에서 **비교질문(C)** 으로 사용될 질문들입니다.
 
-                그러나 **본 검사에서는**, 이러한 질문들에 대해서도  
-                모두 **'아니오'** 라고 답변해 주셔야 합니다.
-
-                아래 세 가지 질문에 대해 연습 삼아 각 문항을 읽고,  
-                스스로 생각한 뒤 **직접 '아니오'를 선택**해 주세요.
+                각 문항을 다시 한 번 읽어 보시고,  
+                연습 삼아 **'아니오'** 를 선택해 주세요.
                 """
             )
 
@@ -503,8 +533,8 @@ elif mode == "interview":
 
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("⬅︎ 성향 설문으로 돌아가기"):
-                    goto("interview_dlcq")
+                if st.button("⬅︎ 비교질문 안내로 돌아가기"):
+                    goto("interview_cq_preview")
             with col2:
                 if st.button("인적 사항 질문 연습으로 ➜"):
                     if not all_no:
@@ -581,7 +611,6 @@ elif mode == "interview":
     # ---------- 8) 최종 질문 세트 요약 ----------
     elif step == "interview_summary":
         qs = st.session_state.get("question_set", None)
-        info = st.session_state["case_info"]
 
         st.title("8. 최종 질문 세트 요약 (연구자/검사관용)")
 
