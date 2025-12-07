@@ -281,6 +281,32 @@ elif mode == "interview":
         gender = st.radio("성별", ["남성", "여성", "기타"], horizontal=True)
         age = st.number_input("나이", min_value=18, max_value=80, value=25, step=1)
 
+        st.markdown("### 최근 상태 (검사 전 확인)")
+
+        sleep_hours = st.slider("지난 24시간 동안 수면 시간(시간)", 0, 12, 7)
+
+        med_use = st.radio("복용 중인 약물이 있습니까?", ["무", "유"], horizontal=True)
+        med_detail = ""
+        if med_use == "유":
+            med_detail = st.text_input(
+                "복용 중인 약물 종류를 적어주세요.",
+                placeholder="예: 항우울제, 수면제 등"
+            )
+
+        alcohol = st.radio("지난 24시간 내 음주 여부", ["무", "유"], horizontal=True)
+        smoking = st.radio("지난 24시간 내 흡연 여부", ["무", "유"], horizontal=True)
+        caffeine = st.radio("지난 12시간 내 카페인 섭취 여부", ["무", "유"], horizontal=True)
+
+        # 저장
+        st.session_state["case_info"].update({
+            "sleep_hours": sleep_hours,
+            "med_use": med_use,
+            "med_detail": med_detail,
+            "alcohol": alcohol,
+            "smoking": smoking,
+            "caffeine": caffeine,
+        })
+        
         agree = st.radio("검사 진행에 동의하십니까?", ["동의함", "동의하지 않음"], horizontal=True)
 
         col1, col2 = st.columns(2)
