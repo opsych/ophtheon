@@ -154,7 +154,7 @@ def make_core_claim_suspect(offense_text: str) -> str:
 
 
 def make_core_claim_victim(offense_text: str) -> str:
-    return f"저는 {offense_text} 당했습니다."
+    return f"저는 {offense_text} 피해를 당했습니다."
 
 
 def make_r_questions_suspect(offense_text: str) -> list[str]:
@@ -167,8 +167,8 @@ def make_r_questions_suspect(offense_text: str) -> list[str]:
 
 def make_r_questions_victim(offense_text: str) -> list[str]:
     return [
-        f"당신은 그 당시 피의자로부터 {offense_text} 당한 사실이 있습니까?",
-        f"당신은 피의자에게 직접 {offense_text} 당한 적이 있습니까?",
+        f"당신은 그 당시 피의자로부터 {offense_text} 피해를 입었습니까?",
+        f"당신은 피의자에게 직접 {offense_text} 피해를 당한 적이 있습니까?",
         f"당신은 피의자로부터 {offense_text} 피해를 입은 것이 사실입니까?",
     ]
 
