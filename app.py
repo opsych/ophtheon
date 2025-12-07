@@ -190,12 +190,12 @@ if step == "home":
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("① 사전 면담 및 질문 생성", use_container_width=True):
+        if st.button("사전 면담 및 질문 연습", use_container_width=True):
             st.session_state["mode"] = "interview"
             st.session_state["step"] = "interview_info"
             st.rerun()
     with col2:
-        if st.button("② 데이터 업로드 및 자동 판정", use_container_width=True):
+        if st.button("데이터 업로드 및 자동 판정", use_container_width=True):
             st.session_state["mode"] = "upload"
             st.session_state["step"] = "upload"
             st.rerun()
@@ -255,7 +255,7 @@ elif mode == "interview":
         if offense_type == "기타":
             offense_free = st.text_input(
                 "어떤 행위에 관한 사건인지 간단히 적어주세요.",
-                placeholder="예) 금품을 갈취, 사기 판매, 집에 침입, ...",
+                placeholder="예) 금품을 갈취, 사기 판매, 주거 침입, ...",
             )
 
         if offense_type == "기타":
@@ -333,8 +333,7 @@ elif mode == "interview":
 
         st.markdown(
             """
-            이제 먼저, 검사 시작 부분에 제시될 **기초 질문 두 가지(I / SR)** 를  
-            간단히 안내한 뒤, 연습해 보겠습니다.
+            이제 질문을 연습해보겠습니다.
             """
         )
 
@@ -577,14 +576,15 @@ elif mode == "interview":
         else:
             st.markdown(
                 """
-                성향 설문에서 **'예'라고 응답하신 문항들** 중 세 가지를 선택하여  
-                이번 검사에서 사용할 **비교질문(C)** 으로 구성합니다.
+                방금 성향 설문에서 **'예'라고 응답하신 문항들** 중  
+                세 가지를 선택하여 이번 검사에서 사용할 **비교질문(C)** 으로 구성합니다.
 
-                비교질문은 검사 절차상 특별한 역할을 하며,  
-                실제 검사에서는 이 질문들에 대해 특정 방식으로 응답하게 됩니다.
+                성향 설문에서는 해당 문항들에 **'예'라고 답하셨지만**,  
+                **비교질문(C)에서는 이 세 문항에 모두 '아니오'라고 답변**하시게 됩니다.
 
-                다음 화면에서 선택된 세 문항을 그대로 제시하고,  
-                예/아니오 응답을 연습해 보겠습니다.
+                다음 화면에서 선택된 세 문항을 그대로 다시 보여드리겠습니다.  
+                각 문항을 읽어보시고,  
+                **'예'라고 했던 내용을 '아니오'라고 말해보는 연습**을 하겠습니다.
                 """
             )
 
