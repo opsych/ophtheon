@@ -210,6 +210,7 @@ elif step == "preview":
                 st.rerun()
 
 # ---------- (3) 실제 검사 화면 ----------
+# ---------- (3) 실제 검사 화면 ----------
 elif step == "run":
     seq = st.session_state.get("exam_questions", None)
     core_claim = st.session_state.get("exam_core_claim", "")
@@ -218,60 +219,90 @@ elif step == "run":
         st.error("질문 세트가 로드되지 않았습니다. 다시 업로드해 주세요.")
         if st.button("다시 업로드하기"):
             st.session_state["test_step"] = "upload"
+            st.session_state["exam_started"] = False
             st.rerun()
     else:
         st.title("검사 시행 — 실시간 진행")
 
-        st.markdown(
-            """
-AI 검사관의 안내에 따라 **정면을 응시**하고,  
-각 문항에 대해 육성으로 '예' 또는 '아니오'라고 답변해 주세요.
-            """
-        )
+        exam_started = st.session_state.get("exam_started", False)
 
-        # 회색 화면 + 중앙 텍스트 박스
-        st.markdown(
-            """
-<div style="background-color:#f2f2f2;
-            border-radius:16px;
-            padding:80px 40px;
-            text-align:center;
-            min-height:260px;
-            display:flex;
-            flex-direction:column;
-            justify-content:center;">
-  <div id="ophtheon-question-text"
-       style="font-size:24px; font-weight:500; margin-bottom:12px;">
+        # 시작 전 안내 텍스트
+        if not exam_started:
+            st.markdown(
+                """
+AI 검사관의 안내에 따라 **정면을 응시**하고,  
+각 문항에 대해 **육성으로 '예' 또는 '아니오'**라고 답변해 주세요.
+                """
+            )
+
+        # ---------------- 회색 화면 ----------------
+        if not exam_started:
+            # 시작 전: 설명 텍스트가 있는 연한 회색 박스
+            st.markdown(
+                """
+<div style="
+    background-color:#f2f2f2;
+    border-radius:16px;
+    padding:80px 40px;
+    text-align:center;
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;">
+  <div style="font-size:22px; font-weight:500; margin-bottom:12px;">
     검사 시작 버튼을 누르면 안내 음성이 재생되고,  
     약 30초 후 첫 번째 질문이 시작됩니다.
   </div>
-  <div id="ophtheon-sub-text"
-       style="font-size:15px; color:#555555;">
-    대기 시간 동안 편안하게 정면을 바라보세요.
+  <div style="font-size:15px; color:#555555;">
+    이 시간 동안에는 정면을 바라보며 편안하게 호흡해 주세요.
   </div>
 </div>
-            """,
-            unsafe_allow_html=True,
-        )
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            # 검사 시작 후: 진짜 검사 화면 (125,125,125 회색 + 십자)
+            st.markdown(
+                """
+<div style="
+    background-color: rgb(125,125,125);
+    border-radius:16px;
+    padding:80px 40px;
+    text-align:center;
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;">
+  <div style="font-size:72px; font-weight:700; color:#000000;">
+    +
+  </div>
+</div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        exam_started = st.session_state.get("exam_started", False)
-
+        # ---------------- 버튼 영역 ----------------
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("←"):
+            if st.button("돌아가기"):
                 st.session_state["test_step"] = "preview"
                 st.session_state["exam_started"] = False
                 st.rerun()
-        with col2:
-            if st.button("검사 시작") and not exam_started:
-                st.session_state["exam_started"] = True
-                st.rerun()
 
-        # 검사 시작 후 TTS & 타이밍 스크립트 삽입
+        with col2:
+            # 시작 전에는 "검사 시작" 버튼 표시, 시작 후에는 숨김
+            if not exam_started:
+                if st.button("검사 시작"):
+                    st.session_state["exam_started"] = True
+                    st.rerun()
+
+        # ---------------- 검사 시작 후: JS TTS 스케줄링 ----------------
         if exam_started:
             # 질문 텍스트 배열
             question_texts = [item["text"] for item in seq]
 
+            # Python 리스트 → JS용 JSON 문자열
             questions_js = json.dumps(question_texts, ensure_ascii=False)
 
             st.markdown(
@@ -281,12 +312,9 @@ const questions = {questions_js};
 const baselineMs = 30000;  // 30초 베이스라인
 const gapMs = 15000;       // 문항 사이 15초 대기
 
-const qText = document.getElementById("ophtheon-question-text");
-const subText = document.getElementById("ophtheon-sub-text");
-
 function speak(text) {{
     try {{
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel();  // 이전 음성 중단
         var msg = new SpeechSynthesisUtterance(text);
         msg.lang = "ko-KR";
         window.speechSynthesis.speak(msg);
@@ -295,18 +323,14 @@ function speak(text) {{
     }}
 }}
 
-// 안내 음성 + 베이스라인 안내
-qText.innerText = "약 30초 이후 검사 질문이 시작됩니다.";
-subText.innerText = "정면을 바라보며 최대한 움직이지 말고 눈 깜빡임을 줄여 주세요.";
+// 검사 안내 음성 (baseline 시작)
 speak("약 30초 이후 검사 질문이 시작됩니다. 질문과 질문 사이에는 15초의 대기시간이 있습니다.");
 
+// 30초 대기 후 첫 번째 질문, 이후 15초 간격으로 다음 질문
 let t = baselineMs;
 
-// 각 문항을 순서대로 스케줄링
 questions.forEach((q, idx) => {{
     setTimeout(() => {{
-        qText.innerText = q;
-        subText.innerText = "질문에 대해 육성으로 예 또는 아니오라고 대답해 주세요.";
         speak(q);
     }}, t);
     t += gapMs;
@@ -314,12 +338,4 @@ questions.forEach((q, idx) => {{
 </script>
                 """,
                 unsafe_allow_html=True,
-            )
-
-            st.info(
-                """
-AI 검사관의 음성을 따라, 각 질문에 대해  
-육성으로 '예' 또는 '아니오'라고만 답변해 주세요.  
-질문 사이 대기 시간 동안에도 정면 응시를 유지하는 것이 중요합니다.
-                """
             )
