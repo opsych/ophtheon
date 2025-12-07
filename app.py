@@ -281,7 +281,7 @@ elif mode == "interview":
         gender = st.radio("성별", ["남성", "여성", "기타"], horizontal=True)
         age = st.number_input("나이", min_value=18, max_value=80, value=25, step=1)
 
-        st.markdown("### 최근 상태 (검사 전 확인)")
+        st.markdown("### 최근 상태")
 
         sleep_hours = st.slider("지난 24시간 동안 수면 시간(시간)", 0, 12, 7)
 
