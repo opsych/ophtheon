@@ -231,7 +231,7 @@ elif step == "run":
             st.markdown(
                 """
 AI 검사관의 안내에 따라 **정면을 응시**하고,  
-각 문항에 대해 **육성으로 '예' 또는 '아니오'**라고 답변해 주세요.
+각 문항에 대해 육성으로 '예' 또는 '아니오'라고 답변해 주세요.
                 """
             )
 
@@ -243,9 +243,9 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
 <div style="
     background-color:#f2f2f2;
     border-radius:16px;
-    padding:80px 40px;
+    padding:180px 140px;
     text-align:center;
-    min-height:260px;
+    min-height:360px;
     display:flex;
     flex-direction:column;
     justify-content:center;">
@@ -267,9 +267,9 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
 <div style="
     background-color: rgb(125,125,125);
     border-radius:16px;
-    padding:80px 40px;
+    padding:180px 140px;
     text-align:center;
-    min-height:260px;
+    min-height:360px;
     display:flex;
     flex-direction:column;
     justify-content:center;
