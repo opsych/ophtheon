@@ -185,9 +185,6 @@ if step == "home":
         """
     )
 
-    st.write("")
-    st.markdown("#### 사용할 기능을 선택해 주세요.")
-
     col1, col2 = st.columns(2)
     with col1:
         if st.button("사전 면담 및 질문 연습", use_container_width=True):
