@@ -299,6 +299,7 @@ elif mode == "interview":
                 "성매매",
                 "마약",
                 "기타",
+                "과제",
             ],
         )
 
@@ -322,7 +323,7 @@ elif mode == "interview":
         if offense_type == "기타":
             offense_free = st.text_input(
                 "어떤 행위에 관한 사건인지 간단히 적어주세요.",
-                placeholder="예) 금품 갈취, 사기 판매, 주거 침입, ...",
+                placeholder="예) 부정 행위, 금품 갈취, 사기 판매, 주거 침입, ...",
             )
 
         if offense_type == "기타":
