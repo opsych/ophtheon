@@ -2,41 +2,37 @@
 import streamlit as st
 import pandas as pd
 
-import streamlit as st
-
 st.markdown("""
 <style>
+/* 1) Google Fonts에서 Sora + Nanum Gothic 로드 */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-/* 1) 영어 범위 (Basic Latin + Latin-1) → Sora 전용 */
-@font-face {
-    font-family: 'SoraSubset';
-    src: url('https://fonts.gstatic.com/s/sora/v7/xMQbuFLW-ZB_dEsA2ovSMQ.woff2') format('woff2');
-    unicode-range: U+0000-00FF; /* 영어/기본 라틴 문자 */
+/* 2) 전체 기본 폰트: 영문은 Sora, 한글은 Nanum Gothic으로 자동 fallback */
+html, body, [class*="css"]  {
+    font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
 }
 
-/* 2) 한글 범위 → Nanum Gothic 전용 */
-@font-face {
-    font-family: 'NanumGothicSubset';
-    src: url('https://fonts.gstatic.com/s/nanumgothic/v21/PNYhP5QmY_zk80u7Fu7wu3c.ttf') format('truetype');
-    unicode-range: U+AC00-D7A3; /* 한글 음절 영역 */
-}
-
-/* 3) 전체 페이지에 적용 */
-html, body, [class*="css"] {
-    font-family: 'SoraSubset', 'NanumGothicSubset', sans-serif !important;
-}
-
-/* 4) 제목에도 동일하게 적용 */
+/* 3) 제목(H1~H6)도 동일 폰트 사용 (조금 더 두껍게) */
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'SoraSubset', 'NanumGothicSubset', sans-serif !important;
+    font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
+    font-weight: 600 !important;
 }
 
+/* 4) 기본 위젯(버튼, 인풋 등)에 폰트 강제 적용 */
+.stButton button,
+.stTextInput input,
+.stSelectbox div,
+.stRadio label,
+.stCheckbox label,
+.stTextArea textarea {
+    font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 st.set_page_config(
-    page_title="Ophtheon — Prototype v0",
-    page_icon="👁️",
+    page_title="Ophtheon — prototype v0",
+    page_icon="🕵🏻‍♂️️",
     layout="centered",
 )
 
@@ -64,8 +60,8 @@ def goto(next_step: str):
 
 # ---------- 1) 홈 ----------
 if step == "home":
-    st.title("Ophtheon — Prototype v0")
-    st.subheader("동공 기반 거짓말 탐지 시스템 (검사관 없이 진행되는 프로토타입)")
+    st.title("Ophtheon — prototype v0")
+    st.subheader("동공 기반 거짓말 탐지 시스템")
 
     st.markdown("""
 Ophtheon은 **동공(pupil)** 반응을 이용해  
@@ -78,10 +74,10 @@ Ophtheon은 **동공(pupil)** 반응을 이용해
 4. 자동 리포트
 """)
 
-    if st.button("검사 시작하기"):
+    if st.button("시작하기"):
         goto("info")
 
-    st.caption("© 2025 QnFP Lab · CTO 정주")
+    st.caption("© 2025 QnFP Lab · Jung Joo Lee")
     
 
 # ---------- 2) 정보 입력 ----------
