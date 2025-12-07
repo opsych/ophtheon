@@ -3,17 +3,19 @@ import random
 import io
 
 # ---------------------------------------------------------
-# 1. 공통 스타일 (폰트)
+# 1. 공통 스타일 (폰트 + 사이드바 예외)
 # ---------------------------------------------------------
+st.markdown(
+    """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-/* 기본 폰트 적용 */
+/* 전체 폰트 패밀리 */
 html, body {
     font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
 }
 
-/* 본문(text-container)만 폰트 크기 18px */
+/* 본문 영역(block-container) 기본 폰트 크기 */
 .block-container {
     font-size: 18px !important;
     line-height: 1.6 !important;
@@ -25,7 +27,7 @@ h2 { font-size: 28px !important; }
 h3 { font-size: 24px !important; }
 h4 { font-size: 20px !important; }
 
-/* 라디오, 체크박스, 입력창 등 본문 UI */
+/* 본문 안의 라디오/체크박스/입력창 등 */
 .block-container .stRadio label,
 .block-container .stRadio div,
 .block-container .stCheckbox label,
@@ -38,12 +40,15 @@ h4 { font-size: 20px !important; }
     font-size: 18px !important;
 }
 
-/* -------- 사이드바는 기본 크기로 유지 -------- */
+/* 사이드바는 기본 크기 유지 */
 [data-testid="stSidebar"] * {
-    font-size: 16px !important;   /* 원래 Streamlit 기본 크기 */
+    font-size: 16px !important;
     line-height: 1.4 !important;
 }
 </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ---------------------------------------------------------
 # 2. 상태 초기화
