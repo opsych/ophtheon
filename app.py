@@ -70,6 +70,20 @@ if "data" not in st.session_state:
 step = st.session_state["step"]
 mode = st.session_state["mode"]
 
+# ---------------------------------------------------------
+# 항상 페이지 맨 위로 스크롤
+# ---------------------------------------------------------
+st.markdown(
+    """
+    <script>
+    const mainSection = window.parent.document.querySelector('section.main');
+    if (mainSection) {
+        mainSection.scrollTo(0, 0);
+    }
+    </script>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ---------------------------------------------------------
 # 공용 함수
