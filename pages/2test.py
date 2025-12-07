@@ -178,7 +178,7 @@ elif step == "preview":
             st.session_state["test_step"] = "upload"
             st.rerun()
     else:
-        st.title("② 검사 시행 — 질문 세트 확인")
+        st.title("검사 시행 — 질문 세트 확인")
 
         st.markdown("#### 피검자의 핵심 주장")
         st.info(core_claim)
