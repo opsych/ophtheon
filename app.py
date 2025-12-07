@@ -23,7 +23,7 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.page_link(
-        "pages/1pre-test.py",
+        "pages/1pretest.py",
         label="① 검사 전 안내 및 연습",
         icon="📝",
         use_container_width=True,
