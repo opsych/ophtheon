@@ -274,7 +274,7 @@ elif mode == "interview":
             if st.button("←"):
                 reset_all()
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 if agree != "동의함":
                     st.error("검사에 동의하지 않으면 검사를 진행할 수 없습니다.")
                 elif not name or not offense_text:
@@ -339,7 +339,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_info")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 goto("interview_isr_intro")
 
     # ---------- 3) I/SR 안내 ----------
@@ -367,7 +367,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_principle")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 goto("interview_isr_practice")
 
     # ---------- 4) I/SR 연습 (라디오 위에 설명 없음) ----------
@@ -399,7 +399,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_isr_intro")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 if ans_i == "선택 안 함" or ans_sr == "선택 안 함":
                     st.error("두 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
                 elif not all_correct:
@@ -443,7 +443,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_isr_practice")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 goto("interview_r_practice")
 
     # ---------- 6) R 연습 ----------
@@ -482,7 +482,7 @@ elif mode == "interview":
                 if st.button("←"):
                     goto("interview_r_intro")
             with col2:
-                if st.button("다음으로 ➜"):
+                if st.button("→"):
                     if not all_answered:
                         st.error("세 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
                     elif r_conflict:
@@ -520,7 +520,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_r_practice")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 goto("interview_dlcq")
 
     # ---------- 8) DLCQ 설문 ----------
@@ -547,7 +547,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_dlcq_intro")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 if not any(answers.values()):
                     st.error("적어도 세 문항 이상 '예'로 응답해야 성향 질문을 만들 수 있습니다.")
                 else:
@@ -585,7 +585,7 @@ elif mode == "interview":
                 if st.button("←"):
                     goto("interview_dlcq")
             with col2:
-                if st.button("➜"):
+                if st.button("→"):
                     goto("interview_c_practice")
 
     # ---------- 10) C 연습 ----------
@@ -620,7 +620,7 @@ elif mode == "interview":
                 if st.button("←"):
                     goto("interview_c_intro")
             with col2:
-                if st.button("➜"):
+                if st.button("→"):
                     if not all_answered:
                         st.error("세 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
                     elif not all_correct:
@@ -647,7 +647,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_c_practice")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 goto("interview_n_practice")
 
     # ---------- 12) N 연습 ----------
@@ -687,7 +687,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_n_intro")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 if not all_answered:
                     st.error("세 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
                 elif not all_correct:
@@ -735,7 +735,7 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_n_practice")
         with col2:
-            if st.button("➜"):
+            if st.button("→"):
                 goto("interview_final_practice")
 
     # ---------- 14) 11문항 최종 연습 ----------
@@ -830,7 +830,7 @@ elif mode == "interview":
                 if st.button("←"):
                     goto("interview_final_intro")
             with col2:
-                if st.button("➜"):
+                if st.button("→"):
                     if not final_all_answered:
                         st.error("11개 질문 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
                     elif not final_all_correct:
