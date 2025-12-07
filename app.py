@@ -884,27 +884,27 @@ elif mode == "interview":
                 """
             )
 
-            st.markdown("### 1) 피검자의 핵심 주장")
-            st.info(core_claim)
+            #st.markdown("### 1) 피검자의 핵심 주장")
+            #st.info(core_claim)
 
-            st.markdown("### 2) 최종 11문항 질문 세트")
+            #st.markdown("### 2) 최종 11문항 질문 세트")
 
             # 화면에 보기 좋게 출력
-            st.markdown("**기초 질문**")
-            st.write(f"{qs['I']}")
-            st.write(f"{qs['SR']}")
+            #st.markdown("**기초 질문**")
+            #st.write(f"{qs['I']}")
+            #st.write(f"{qs['SR']}")
 
-            st.markdown("**인적 사항 질문**")
-            for i, q in enumerate(qs["N"], start=1):
-                st.write(f"{q}")
+            #st.markdown("**인적 사항 질문**")
+            #for i, q in enumerate(qs["N"], start=1):
+            #    st.write(f"{q}")
 
-            st.markdown("**성향 질문**")
-            for i, q in enumerate(qs["C"], start=1):
-                st.write(f"{q}")
+            #st.markdown("**성향 질문**")
+            #for i, q in enumerate(qs["C"], start=1):
+            #    st.write(f"{q}")
 
-            st.markdown("**사건 관련 질문**")
-            for i, q in enumerate(qs["R"], start=1):
-                st.write(f"{q}")
+            #st.markdown("**사건 관련 질문**")
+            #for i, q in enumerate(qs["R"], start=1):
+            #   st.write(f"{q}")
 
             # 텍스트 파일로도 저장할 수 있게 구성
             lines = []
