@@ -64,12 +64,12 @@ if step == "home":
     st.subheader("동공 기반 거짓말 탐지 시스템")
 
     st.markdown("""
-
-    
+ 
+     
 Ophtheon은 **동공(pupil)** 반응을 이용해  
 진술의 진위를 스크리닝하는 비접촉·자동 채점 거짓말 탐지 시스템입니다.
-
-
+ 
+ 
 """)
 
     if st.button("시작하기"):
