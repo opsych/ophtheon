@@ -19,6 +19,9 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* -----------------------------
+       FONT FAMILY
+    ------------------------------*/
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
     html, body, [class*="css"] {
@@ -28,16 +31,62 @@ st.markdown(
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
         font-weight: 600 !important;
+        margin-top: 0.5em !important;
+        margin-bottom: 0.5em !important;
     }
 
-    .stButton button,
-    .stTextInput>div>div>input,
-    .stSelectbox div,
-    .stRadio label,
-    .stCheckbox label,
-    .stTextArea textarea {
-        font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
+    /* -----------------------------
+       GLOBAL TEXT SIZE (본문)
+    ------------------------------*/
+    html, body, p, div, span, label {
+        font-size: 18px !important;
+        line-height: 1.6 !important;
     }
+
+    /* -----------------------------
+       TITLES
+    ------------------------------*/
+    h1 { font-size: 32px !important; }
+    h2 { font-size: 28px !important; }
+    h3 { font-size: 24px !important; }
+    h4 { font-size: 20px !important; }
+
+    /* -----------------------------
+       RADIO / CHECKBOX LABEL SIZE
+    ------------------------------*/
+    .stRadio > label, .stRadio div {
+        font-size: 18px !important;
+    }
+
+    .stCheckbox label {
+        font-size: 18px !important;
+    }
+
+    /* -----------------------------
+       TEXT INPUT / SELECT BOX
+    ------------------------------*/
+    .stTextInput input,
+    .stSelectbox div,
+    .stTextArea textarea {
+        font-size: 18px !important;
+    }
+
+    /* -----------------------------
+       SLIDER LABEL / VALUE
+    ------------------------------*/
+    .stSlider label,
+    .stSlider span {
+        font-size: 18px !important;
+    }
+
+    /* -----------------------------
+       ALERT BOX (success/info/warn)
+    ------------------------------*/
+    .stAlert > div {
+        font-size: 18px !important;
+        line-height: 1.5 !important;
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
