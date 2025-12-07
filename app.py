@@ -119,32 +119,37 @@ if "data" not in st.session_state:
 
 step = st.session_state["step"]
 mode = st.session_state["mode"]
+
+
 # ---------------------------------------------------------
 # 스크롤 맨 위로 올리기 (페이지 전환 시)
 # ---------------------------------------------------------
-def scroll_to_top():
+
+
+def scroll_top_now():
     components.html(
         """
         <script>
+        // 현재 프레임과 부모 프레임 모두 맨 위로
+        try {
             window.scrollTo(0, 0);
+        } catch (e) {}
+
+        try {
+            window.parent.scrollTo(0, 0);
+        } catch (e) {}
         </script>
         """,
         height=0,
     )
-
-# step이 바뀌어 rerun 된 경우에만 실행
-if st.session_state.get("force_scroll_top", False):
-    scroll_to_top()
-    st.session_state["force_scroll_top"] = False
 # ---------------------------------------------------------
-
 
 # ---------------------------------------------------------
 # 공용 함수
 # ---------------------------------------------------------
 def goto(next_step: str):
     st.session_state["step"] = next_step
-    st.session_state["force_scroll_top"] = True  # 다음 렌더에서 맨 위로
+    scroll_top_now()          # ← 단계 바꾸기 직전에 스크롤 올리기
     st.rerun()
 
 
@@ -160,12 +165,12 @@ def reset_all():
     ]:
         if key in st.session_state:
             del st.session_state[key]
+
     st.session_state["mode"] = "none"
     st.session_state["step"] = "home"
-    st.session_state["force_scroll_top"] = True  # 홈으로 갈 때도 맨 위로
+
+    scroll_top_now()          # 홈으로 갈 때도 위로 올리기
     st.rerun()
-
-
 # ---------------------------------------------------------
 # 질문 템플릿 함수들
 # ---------------------------------------------------------
