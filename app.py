@@ -167,8 +167,8 @@ def make_r_questions_suspect(offense_text: str) -> list[str]:
 
 def make_r_questions_victim(offense_text: str) -> list[str]:
     return [
-        f"당신은 그 당시 피의자로부터 {offense_text}을/를 당한 사실이 있습니까?",
-        f"당신은 피의자에게 직접 {offense_text}을/를 당한 적이 있습니까?",
+        f"당신은 그 당시 피의자로부터 {offense_text} 당한 사실이 있습니까?",
+        f"당신은 피의자에게 직접 {offense_text} 당한 적이 있습니까?",
         f"당신은 피의자로부터 {offense_text} 피해를 입은 것이 사실입니까?",
     ]
 
@@ -308,7 +308,7 @@ elif mode == "interview":
         if offense_type == "기타":
             offense_free = st.text_input(
                 "어떤 행위에 관한 사건인지 간단히 적어주세요.",
-                placeholder="예) 금품 갈취, 사기 판매, 주거 침입, ...",
+                placeholder="예) 금품 갈취, 불법 판매, 주거 침입, ...",
             )
 
         if offense_type == "기타":
