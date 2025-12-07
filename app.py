@@ -333,7 +333,7 @@ elif mode == "interview":
 
         st.markdown(
             """
-            이제 질문을 연습해보겠습니다.
+            이제 질문을 알려드리겠습니다.
             """
         )
 
@@ -356,16 +356,11 @@ elif mode == "interview":
             """
         )
 
-        st.markdown("**I 질문**")
-        st.markdown(f"- {I_QUESTION}")
-
-        st.markdown("**SR 질문**")
-        st.markdown(f"- {SR_QUESTION}")
 
         st.markdown(
             """
-            다음 화면에서 위 두 문장을 그대로 제시하고,  
-            실제 검사와 같은 방식으로 **'예' 또는 '아니오'** 를 선택해 보는  
+            다음 화면에서 실제 검사와 같은 방식으로
+            **'예' 또는 '아니오'** 를 답변해보는  
             연습을 진행하겠습니다.
             """
         )
