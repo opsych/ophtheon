@@ -252,10 +252,10 @@ if step == "interview_info":
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("처음으로 초기화"):
+        if st.button("home"):
             reset_all()
     with col2:
-        if st.button("다음 단계로 ➜"):
+        if st.button("→"):
             if agree != "동의함":
                 st.error("검사에 동의하지 않으면 검사를 진행할 수 없습니다.")
             elif not name or not offense_text:
