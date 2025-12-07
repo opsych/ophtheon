@@ -499,8 +499,7 @@ elif mode == "interview":
         st.markdown("#### 핵심 주장")
         st.info(core_claim)
 
-        st.markdown(
-            f"""
+        st.markdown(f"""
             이제 이번 사건과 직접 관련된 **사건 관련 질문** 을 안내해 드리겠습니다.  
 
             사건 관련 질문은 **{name}** 님의 주장과 관련된 세 문항으로 구성되며,  
@@ -508,8 +507,7 @@ elif mode == "interview":
 
             다음 화면에서 세 문항을 제시하고, 실제 검사와 같은 방식으로  
             예/아니오 응답을 연습해 보겠습니다.
-            """
-        )
+            """)
 
         role_key = info["role"]
         if role_key == "suspect":
