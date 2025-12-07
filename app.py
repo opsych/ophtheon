@@ -126,7 +126,6 @@ mode = st.session_state["mode"]
 # ---------------------------------------------------------
 def goto(next_step: str):
     st.session_state["step"] = next_step
-    scroll_top_now()          # ← 단계 바꾸기 직전에 스크롤 올리기
     st.rerun()
 
 
@@ -146,7 +145,6 @@ def reset_all():
     st.session_state["mode"] = "none"
     st.session_state["step"] = "home"
 
-    scroll_top_now()          # 홈으로 갈 때도 위로 올리기
     st.rerun()
 # ---------------------------------------------------------
 # 질문 템플릿 함수들
