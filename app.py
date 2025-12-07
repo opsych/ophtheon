@@ -803,12 +803,7 @@ elif mode == "interview":
             이제 실제 검사에 앞서,  
             검사에서 진행될 **11가지 질문을 한 번에 연습**해 보겠습니다.
 
-            다음 화면에서는 다음 순서대로 문항이 제시됩니다.
-
-            1. 기초 질문 2문항
-            2. 인적 사항 질문 3문항  
-            3. 성향 질문 3문항
-            4. 사건 관련 질문 3문항  
+            다음 화면에서는 질문이 랜덤한 순서로 제시됩니다.
 
             실제 검사라고 생각하시고,  
             각 문항에 대해 차분히 **'예' 또는 '아니오'** 를 선택해 주세요.
@@ -824,10 +819,11 @@ elif mode == "interview":
                 goto("interview_final_practice")
 
     # ---------- 14) 11문항 최종 연습 ----------
+        
     elif step == "interview_final_practice":
         qs = st.session_state.get("question_set", None)
         info = st.session_state.get("case_info", {})
-        role_key = info.get("role", "suspect")
+        role_key = info.get("role", "suspect")  # 현재는 항상 'suspect'
 
         st.title("최종 연습")
 
@@ -836,78 +832,82 @@ elif mode == "interview":
             if st.button("←"):
                 goto("interview_final_intro")
         else:
-            final_all_answered = True
-            final_all_correct = True
-            r_conflict = False
+            st.markdown(
+                """
+                지금부터 Ophtheon 11문항을 **무작위 순서**로 제시합니다.  
+
+                실제 검사라고 생각하시고, 각 문항에 대해  
+                차분히 **'예' 또는 '아니오'** 를 선택해 주세요.
+                """
+            )
+
+            # 11개 문항을 (종류, 질문, key, 기대응답) 형태로 모으기
+            question_items = []
 
             # I / SR
-            ans_I = st.radio(
-                qs['I'],
-                ["선택 안 함", "예", "아니오"],
-                index=0,
-                key="final_I",
-            )
-            if ans_I == "선택 안 함":
-                final_all_answered = False
-                final_all_correct = False
-            elif ans_I != "예":
-                final_all_correct = False
+            question_items.append({
+                "kind": "I",
+                "question": qs["I"],
+                "key": "final_I",
+                "expected": "예",
+            })
+            question_items.append({
+                "kind": "SR",
+                "question": qs["SR"],
+                "key": "final_SR",
+                "expected": "예",
+            })
 
-            ans_SR = st.radio(
-                qs['SR'],
-                ["선택 안 함", "예", "아니오"],
-                index=0,
-                key="final_SR",
-            )
-            if ans_SR == "선택 안 함":
-                final_all_answered = False
-                final_all_correct = False
-            elif ans_SR != "예":
-                final_all_correct = False
-
-            # N (3)
+            # N (3문항)
             for i, q in enumerate(qs["N"], start=1):
-                ans = st.radio(
-                    q,
-                    ["선택 안 함", "예", "아니오"],
-                    index=0,
-                    key=f"final_N_{i}",
-                )
-                if ans == "선택 안 함":
-                    final_all_answered = False
-                    final_all_correct = False
-                elif ans != "예":
-                    final_all_correct = False
+                question_items.append({
+                    "kind": "N",
+                    "question": q,
+                    "key": f"final_N_{i}",
+                    "expected": "예",
+                })
 
-            # C (3)
+            # C (3문항) — 항상 '아니오'가 기대 응답
             for i, q in enumerate(qs["C"], start=1):
-                ans = st.radio(
-                    q,
-                    ["선택 안 함", "예", "아니오"],
-                    index=0,
-                    key=f"final_C_{i}",
-                )
-                if ans == "선택 안 함":
-                    final_all_answered = False
-                    final_all_correct = False
-                elif ans != "아니오":
-                    final_all_correct = False
+                question_items.append({
+                    "kind": "C",
+                    "question": q,
+                    "key": f"final_C_{i}",
+                    "expected": "아니오",
+                })
 
-            # R (3) — 역할에 따라 기대 응답 다름
+            # R (3문항) — 피의자 기준: 모두 '아니오'
             for i, q in enumerate(qs["R"], start=1):
+                expected = "아니오"  # 현재는 역할이 항상 피의자이므로
+                question_items.append({
+                    "kind": "R",
+                    "question": q,
+                    "key": f"final_R_{i}",
+                    "expected": expected,
+                })
+
+            # 무작위 순서로 셔플
+            random.shuffle(question_items)
+
+            final_all_answered = True
+            final_all_correct = True
+            r_conflict = False  # 사건 질문(R)에서 핵심 주장과 어긋나는 응답 여부
+
+            # 셔플된 순서대로 라디오 표시
+            for item in question_items:
                 ans = st.radio(
-                    q,
+                    item["question"],
                     ["선택 안 함", "예", "아니오"],
                     index=0,
-                    key=f"final_R_{i}",
+                    key=item["key"],
                 )
+
                 if ans == "선택 안 함":
                     final_all_answered = False
                     final_all_correct = False
-                else:
-                    expected = "아니오" if role_key == "suspect" else "예"
-                    if ans != expected:
-                        final_all_correct = False
+                elif ans != item["expected"]:
+                    final_all_correct = False
+                    if item["kind"] == "R":
                         r_conflict = True
 
             col1, col2 = st.columns(2)
@@ -919,22 +919,16 @@ elif mode == "interview":
                     if not final_all_answered:
                         st.error("11개 질문 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
                     elif not final_all_correct:
-                        # R 쪽에서의 충돌이면 별도 경고
                         if r_conflict:
-                            if role_key == "suspect":
-                                st.error(
-                                    "사건 관련 질문에서 '예'라고 응답하면 가해 사실을 인정하는 것으로 해석됩니다. "
-                                    "현재 응답은 검사의 전제와 맞지 않으므로, 검사관과 상의해 주세요."
-                                )
-                            else:
-                                st.error(
-                                    "사건 관련 질문에 대한 응답이 앞에서 입력한 피해 주장과 일치하지 않습니다. "
-                                    "검사관과 상의해 주세요."
-                                )
+                            st.error(
+                                "사건 관련 질문(R)에 대한 응답이 앞서 입력한 부인 취지와 어긋납니다. "
+                                "현재 응답은 검사의 전제와 맞지 않으므로, 검사관과 상의해 주세요."
+                            )
                         else:
                             st.error("Ophtheon 11문항은 설정된 규칙에 따라 응답해야 검사를 완료할 수 있습니다.")
                     else:
                         goto("interview_end")
+    
 
     # ---------- 15) 면담 종료 + 프린트용 질문 세트 ----------
     elif step == "interview_end":
