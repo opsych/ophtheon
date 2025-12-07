@@ -149,7 +149,7 @@ if step == "interview_info":
     st.title("기본 정보 입력")
 
     role = st.radio(
-        "이번 사건에서 본인의 신분을 선택해 주세요.",
+        "이번 사건에서 본인의 신분을 선택해주세요.",
         ["용의자", "피의자", "피고인"],
         horizontal=True,
     )
