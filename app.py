@@ -296,7 +296,7 @@ elif mode == "interview":
         elif offense_category == "과제":
             offense_type = st.selectbox(
                 "사건의 세부유형을 선택해 주세요.",
-                ["빨간 버튼 클릭"],
+                ["빨간 버튼을 클릭"],
             )
         else:
             offense_type = st.selectbox(
@@ -496,11 +496,11 @@ elif mode == "interview":
 
         st.title("사건 관련 질문 안내")
 
-        st.markdown("#### 피검자 **{name}** 의 핵심 주장")
+        st.markdown("#### 핵심 주장")
         st.info(core_claim)
 
         st.markdown(
-            """
+            f"""
             이제 이번 사건과 직접 관련된 **사건 관련 질문** 을 안내해 드리겠습니다.  
 
             사건 관련 질문은 **{name}** 님의 주장과 관련된 세 문항으로 구성되며,  
