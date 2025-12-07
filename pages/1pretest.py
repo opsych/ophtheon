@@ -10,24 +10,24 @@ st.markdown(
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-/* 기본 폰트 패밀리 */
+/* 전체 폰트 */
 html, body {
     font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
 }
 
-/* 본문 전체 기본 폰트 크기 ↓ (18 → 16으로 감소) */
+/* 본문 행간 살짝 증가 */
 .block-container {
     font-size: 16px !important;
-    line-height: 1.55 !important;
+    line-height: 1.65 !important;   /* ★ 행간 여유롭게 */
 }
 
-/* 제목 크기 조정 */
+/* 제목 크기 */
 h1 { font-size: 30px !important; }
 h2 { font-size: 26px !important; }
 h3 { font-size: 22px !important; }
 h4 { font-size: 18px !important; }
 
-/* 본문 UI 요소 폰트 크기 ↓ (統一 16px) */
+/* 본문 UI 요소 폰트 */
 .block-container .stRadio label,
 .block-container .stRadio div,
 .block-container .stCheckbox label,
@@ -38,9 +38,10 @@ h4 { font-size: 18px !important; }
 .block-container .stSlider span,
 .block-container .stAlert > div {
     font-size: 16px !important;
+    line-height: 1.55 !important;  /* UI 요소는 너무 띄면 어색 → 유지 */
 }
 
-/* 사이드바는 기본(작은) 크기로 유지 */
+/* 사이드바 기본 */
 [data-testid="stSidebar"] * {
     font-size: 15px !important;
     line-height: 1.4 !important;
@@ -49,7 +50,6 @@ h4 { font-size: 18px !important; }
     """,
     unsafe_allow_html=True,
 )
-
 # ---------------------------------------------------------
 # 2. 상태 초기화
 # ---------------------------------------------------------
@@ -149,7 +149,7 @@ if step == "interview_info":
     st.title("기본 정보 입력")
 
     role = st.radio(
-        "이번 사건에서 본인의 위치를 선택해 주세요.",
+        "이번 사건에서 본인의 신분을 선택해 주세요.",
         ["용의자", "피의자", "피고인"],
         horizontal=True,
     )
@@ -158,7 +158,7 @@ if step == "interview_info":
     offense_category = st.selectbox(
         "사건의 대분류를 선택해 주세요.",
         [
-            "과제",
+            "실험참여",
             "성범죄",
             "폭력범죄",
             "재산범죄",
