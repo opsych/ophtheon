@@ -4,6 +4,9 @@ import pandas as pd
 
 st.markdown("""
 <style>
+.main > div {
+    padding-top: 180px !important;
+    }
 /* 1) Google Fonts에서 Sora + Nanum Gothic 로드 */
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
