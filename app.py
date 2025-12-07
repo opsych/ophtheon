@@ -222,7 +222,7 @@ elif mode == "interview":
 
     # ---------- 1) 정보 입력 ----------
     if step == "interview_info":
-        st.title("1. 기본 정보 입력")
+        st.title("기본 정보 입력")
 
         role = st.radio(
             "이번 사건에서 본인의 위치를 선택해 주세요.",
@@ -317,7 +317,7 @@ elif mode == "interview":
         info = st.session_state["case_info"]
         name = info.get("name", "(이름 미지정)")
 
-        st.title("2. 검사 소개 및 설명")
+        st.title("검사 소개 및 설명")
 
         st.markdown(
             f"""
@@ -358,7 +358,7 @@ elif mode == "interview":
 
     # ---------- 3) I/SR 안내 ----------
     elif step == "interview_isr_intro":
-        st.title("3. 기초 질문 안내")
+        st.title("기초 질문 안내")
 
         st.markdown(
             """
@@ -386,7 +386,7 @@ elif mode == "interview":
 
     # ---------- 4) I/SR 연습 (라디오 위에 설명 없음) ----------
     elif step == "interview_isr_practice":
-        st.title("4. 기초 질문 연습")
+        st.title("기초 질문 연습")
 
         all_correct = True
 
@@ -427,7 +427,7 @@ elif mode == "interview":
         offense_text = info["offense_text"]
         core_claim = info["core_claim"]
 
-        st.title("5. 사건 관련 질문 안내")
+        st.title("사건 관련 질문 안내")
 
         st.markdown("#### 피검자의 핵심 주장")
         st.info(core_claim)
@@ -466,7 +466,7 @@ elif mode == "interview":
         role_key = info["role"]
         r_questions = info.get("R_questions", [])
 
-        st.title("6. 사건 관련 질문 연습")
+        st.title("사건 관련 질문 연습")
 
         if not r_questions:
             st.error("사건 관련 질문이 생성되지 않았습니다. 이전 단계로 돌아가 주세요.")
@@ -515,7 +515,7 @@ elif mode == "interview":
 
     # ---------- 7) DLCQ 안내 ----------
     elif step == "interview_dlcq_intro":
-        st.title("7. 성향 설문 안내")
+        st.title("성향 설문 안내")
 
         st.markdown(
             """
@@ -539,7 +539,7 @@ elif mode == "interview":
 
     # ---------- 8) DLCQ 설문 ----------
     elif step == "interview_dlcq":
-        st.title("8. 성향 설문 응답")
+        st.title("성향 설문 응답")
 
         answers = {}
         for idx, item in enumerate(DLCQ_ITEMS):
@@ -573,7 +573,7 @@ elif mode == "interview":
     elif step == "interview_c_intro":
         indices = st.session_state.get("cq_indices", [])
 
-        st.title("9. 성향 질문 안내")
+        st.title("성향 질문 안내")
 
         if not indices:
             st.error("선택된 성향 질문이 없습니다. 성향 설문 단계로 돌아가 주세요.")
@@ -605,7 +605,7 @@ elif mode == "interview":
     # ---------- 10) C 연습 ----------
     elif step == "interview_c_practice":
         indices = st.session_state.get("cq_indices", [])
-        st.title("10. 성향 질문 연습")
+        st.title("성향 질문 연습")
 
         if not indices:
             st.error("선택된 성향 질문이 없습니다. 성향 설문 단계로 돌아가 주세요.")
@@ -644,7 +644,7 @@ elif mode == "interview":
 
     # ---------- 11) N 안내 ----------
     elif step == "interview_n_intro":
-        st.title("11. 인적 사항 질문 안내")
+        st.title("인적 사항 질문 안내")
 
         st.markdown(
             """
@@ -671,7 +671,7 @@ elif mode == "interview":
         gender = info["gender"]
         age = info["age"]
 
-        st.title("12. 인적 사항 질문 연습")
+        st.title("인적 사항 질문 연습")
 
         n_questions = [
             f"당신의 이름은 {name} 입니까?",
@@ -725,7 +725,7 @@ elif mode == "interview":
 
     # ---------- 13) 11문항 최종 연습 안내 ----------
     elif step == "interview_final_intro":
-        st.title("13. 최종 연습 안내")
+        st.title("최종 연습 안내")
 
         st.markdown(
             """
@@ -758,7 +758,7 @@ elif mode == "interview":
         info = st.session_state.get("case_info", {})
         role_key = info.get("role", "suspect")
 
-        st.title("14. 최종 연습")
+        st.title("최종 연습")
 
         if not qs:
             st.error("질문 세트가 생성되지 않았습니다. 이전 단계로 돌아가 주세요.")
@@ -869,8 +869,6 @@ elif mode == "interview":
     elif step == "interview_end":
         qs = st.session_state.get("question_set", None)
         info = st.session_state.get("case_info", {})
-
-        st.title("15. 연습 완료")
 
         if not qs:
             st.error("질문 세트가 생성되지 않았습니다. 처음부터 다시 진행해 주세요.")
