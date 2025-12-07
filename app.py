@@ -1,3 +1,4 @@
+# app.py
 import streamlit as st
 import pandas as pd
 import random
@@ -18,10 +19,8 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Google Fonts: Sora + Nanum Gothic 로드 */
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-    /* 전체 기본 폰트: 영문은 Sora, 한글은 Nanum Gothic */
     html, body, [class*="css"] {
         font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
     }
@@ -165,7 +164,6 @@ def pick_cq_indices(dlcq_answers: dict[int, bool], k: int = 3) -> list[int]:
 # 홈 화면: 모드 선택
 # ---------------------------------------------------------
 if step == "home":
-    # 홈에서만 상단 여백 조금 추가
     st.markdown(
         """
         <style>
@@ -237,7 +235,6 @@ elif mode == "interview":
             ],
         )
 
-        # 대분류에 따른 세부유형 예시 (v0: 간단)
         if offense_category == "성범죄":
             offense_type = st.selectbox(
                 "사건의 세부유형을 선택해 주세요.",
@@ -261,7 +258,6 @@ elif mode == "interview":
                 placeholder="예) 금품을 갈취, 사기 판매, 집에 침입, ...",
             )
 
-        # 최종 텍스트 (템플릿에 들어갈 표현)
         if offense_type == "기타":
             offense_text = offense_free.strip() if offense_free else "행위를"
         else:
@@ -287,7 +283,6 @@ elif mode == "interview":
                 elif not name or not offense_text:
                     st.error("이름과 사건 정보는 반드시 입력해 주세요.")
                 else:
-                    # core_claim 자동 생성 (역할에 따라)
                     if role_key == "suspect":
                         core_claim = make_core_claim_suspect(offense_text)
                     else:
@@ -304,14 +299,14 @@ elif mode == "interview":
                         "gender": gender,
                         "age": age,
                     }
-                    goto("interview_isr_intro")
+                    goto("interview_principle")
 
-    # ---------- 2) I/SR 안내 ----------
-    elif step == "interview_isr_intro":
+    # ---------- 2) 검사 소개 + 원리 ----------
+    elif step == "interview_principle":
         info = st.session_state["case_info"]
         name = info.get("name", "(이름 미지정)")
 
-        st.title("2. 검사 안내 및 기본 약속 (I / SR 설명)")
+        st.title("2. 검사 소개 및 원리 설명")
 
         st.markdown(
             f"""
@@ -319,75 +314,9 @@ elif mode == "interview":
 
             오늘 진행되는 Ophtheon 검사는 총 **11가지 질문**으로 구성됩니다.  
             모든 질문은 검사 전에 미리 알려드리고,  
-            실제 검사에 앞서 충분히 **연습**할 수 있는 구조로 되어 있습니다.
-
-            그중에서 먼저, 검사에 앞서 꼭 필요한  
-            **두 가지 기본 약속 질문(I / SR)** 을 안내해 드리겠습니다.
+            실제 검사에 앞서 충분히 연습할 수 있도록 설계되어 있습니다.
             """
         )
-
-        st.markdown("#### 기본 약속 질문")
-
-        st.markdown(f"- I : {I_QUESTION}")
-        st.markdown(f"- SR : {SR_QUESTION}")
-
-        st.info("실제 검사에서는 두 문항 모두 **'예'** 라고 답변해 주셔야 합니다.")
-
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("⬅︎ 정보 입력으로 돌아가기"):
-                goto("interview_info")
-        with col2:
-            if st.button("I / SR 질문 연습하기 ➜"):
-                goto("interview_isr_practice")
-
-    # ---------- 3) I/SR 연습 ----------
-    elif step == "interview_isr_practice":
-        st.title("3. 기본 약속 질문(I / SR) 연습")
-
-        st.markdown(
-            """
-            아래 두 문항은 오늘 검사를 진행하기 위한 **기본 약속 질문**입니다.  
-            실제 검사에서는 두 문항 모두 **'예'** 라고 답변하게 됩니다.
-
-            각 문항을 읽고, 연습 삼아 직접 **'예'** 를 선택해 주세요.
-            """
-        )
-
-        all_yes = True
-
-        ans_i = st.radio(
-            I_QUESTION,
-            ["선택 안 함", "예", "아니오"],
-            index=0,
-            key="isr_I",
-        )
-        if ans_i != "예":
-            all_yes = False
-
-        ans_sr = st.radio(
-            SR_QUESTION,
-            ["선택 안 함", "예", "아니오"],
-            index=0,
-            key="isr_SR",
-        )
-        if ans_sr != "예":
-            all_yes = False
-
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("⬅︎ I / SR 설명으로 돌아가기"):
-                goto("interview_isr_intro")
-        with col2:
-            if st.button("검사 원리 설명으로 ➜"):
-                if not all_yes:
-                    st.error("두 문항 모두 '예'를 선택해야 다음 단계로 진행할 수 있습니다.")
-                else:
-                    goto("interview_principle")
-
-    # ---------- 4) 검사 원리 설명 ----------
-    elif step == "interview_principle":
-        st.title("4. 검사 원리 설명")
 
         st.info(
             """
@@ -399,25 +328,97 @@ elif mode == "interview":
 
             특히, 심리적으로 중요한 질문을 듣거나 거짓을 말할 때  
             동공이 무의식적으로 조금 더 커지며, 이는 의도적으로 통제하기 어렵습니다.
+            """
+        )
 
-            Ophtheon은 이러한 동공 반응을  
-            **비교질문(C)** 과 **사건 관련 질문(R)** 사이에서 비교하여,  
-            그 차이(ΔC–ΔR)를 AI 기반 자동 채점 알고리즘으로 분석합니다.
+        st.markdown(
+            """
+            이제 먼저, 검사 시작 부분에 제시될 **기초 질문 두 가지(I / SR)** 를  
+            간단히 안내한 뒤, 연습해 보겠습니다.
             """
         )
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎ I / SR 연습으로 돌아가기"):
-                goto("interview_isr_practice")
+            if st.button("⬅︎ 정보 입력으로 돌아가기"):
+                goto("interview_info")
         with col2:
-            if st.button("사건 관련 질문 안내 보기 ➜"):
-                goto("interview_r_intro")
+            if st.button("기초 질문(I / SR) 안내 보기 ➜"):
+                goto("interview_isr_intro")
+
+    # ---------- 3) I/SR 안내 ----------
+    elif step == "interview_isr_intro":
+        st.title("3. 기초 질문(I / SR) 안내")
+
+        st.markdown(
+            """
+            검사 시작 부분에는, 오늘 검사를 어떻게 진행할 것인지에 대한  
+            간단한 **기초 질문 두 가지**가 포함되어 있습니다.
+            """
+        )
+
+        st.markdown("**I 질문**")
+        st.markdown(f"- {I_QUESTION}")
+
+        st.markdown("**SR 질문**")
+        st.markdown(f"- {SR_QUESTION}")
+
+        st.markdown(
+            """
+            다음 화면에서 위 두 문장을 그대로 제시하고,  
+            실제 검사와 같은 방식으로 **'예' 또는 '아니오'** 를 선택해 보는  
+            연습을 진행하겠습니다.
+            """
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("⬅︎ 검사 원리 설명으로 돌아가기"):
+                goto("interview_principle")
+        with col2:
+            if st.button("기초 질문 연습하기 ➜"):
+                goto("interview_isr_practice")
+
+    # ---------- 4) I/SR 연습 (라디오 위에 설명 없음) ----------
+    elif step == "interview_isr_practice":
+        st.title("4. 기초 질문(I / SR) 연습")
+
+        all_correct = True
+
+        ans_i = st.radio(
+            I_QUESTION,
+            ["선택 안 함", "예", "아니오"],
+            index=0,
+            key="isr_I",
+        )
+        if ans_i != "예":
+            all_correct = False
+
+        ans_sr = st.radio(
+            SR_QUESTION,
+            ["선택 안 함", "예", "아니오"],
+            index=0,
+            key="isr_SR",
+        )
+        if ans_sr != "예":
+            all_correct = False
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("⬅︎ 기초 질문 안내로 돌아가기"):
+                goto("interview_isr_intro")
+        with col2:
+            if st.button("사건 관련 질문 안내로 ➜"):
+                if ans_i == "선택 안 함" or ans_sr == "선택 안 함":
+                    st.error("두 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
+                elif not all_correct:
+                    st.error("기초 질문 두 문항은 모두 '예'라고 응답해야 검사를 진행할 수 있습니다.")
+                else:
+                    goto("interview_r_intro")
 
     # ---------- 5) R 안내 ----------
     elif step == "interview_r_intro":
         info = st.session_state["case_info"]
-        role_key = info["role"]
         offense_text = info["offense_text"]
         core_claim = info["core_claim"]
 
@@ -428,27 +429,28 @@ elif mode == "interview":
 
         st.markdown(
             """
-            이제 **사건과 직접 관련된 질문(관련 질문, R)** 을 안내해 드리겠습니다.
+            이제 이번 사건과 직접 관련된 **사건 관련 질문(R)** 을 안내해 드리겠습니다.  
 
-            이 질문들은 피검자님의 핵심 주장과 관련된 **세 가지 질문**으로 구성됩니다.  
-            다음 화면에서 실제 질문 내용을 확인하고,  
-            각 문항에 대해 연습 삼아 '예' 또는 '아니오'를 선택해 보겠습니다.
+            사건 관련 질문은 피검자님의 주장과 연결된 세 문항으로 구성되며,  
+            실제 검사에서는 각 문항에 대해 **'예' 또는 '아니오'** 로 응답하게 됩니다.
+
+            다음 화면에서 세 문항을 제시하고, 실제 검사와 같은 방식으로  
+            예/아니오 응답을 연습해 보겠습니다.
             """
         )
 
-        # 역할에 따라 R 질문 세트 생성
+        role_key = info["role"]
         if role_key == "suspect":
             r_questions = make_r_questions_suspect(offense_text)
         else:
             r_questions = make_r_questions_victim(offense_text)
 
-        # 질문 세트 저장
         st.session_state["case_info"]["R_questions"] = r_questions
 
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("⬅︎ 검사 원리 설명으로 돌아가기"):
-                goto("interview_principle")
+            if st.button("⬅︎ 기초 질문 연습으로 돌아가기"):
+                goto("interview_isr_practice")
         with col2:
             if st.button("사건 관련 질문 연습하기 ➜"):
                 goto("interview_r_practice")
@@ -456,6 +458,7 @@ elif mode == "interview":
     # ---------- 6) R 연습 ----------
     elif step == "interview_r_practice":
         info = st.session_state["case_info"]
+        role_key = info["role"]
         r_questions = info.get("R_questions", [])
 
         st.title("6. 사건 관련 질문(R) 연습")
@@ -465,19 +468,8 @@ elif mode == "interview":
             if st.button("⬅︎ 사건 관련 질문 안내로 돌아가기"):
                 goto("interview_r_intro")
         else:
-            st.markdown(
-                """
-                아래 세 가지 질문은 이번 사건과 직접 관련된 **관련 질문(R)** 입니다.  
-
-                피의자인 경우, 실제 검사에서는 보통 이 질문들에 **'아니오'** 라고 답변하게 되고,  
-                피해자인 경우에는 **'예'** 라고 답변하게 됩니다.  
-
-                지금은 연습 단계이므로, 각 문항을 읽고  
-                본인의 상황에 맞게 **'예' 또는 '아니오'** 를 선택해 주세요.
-                """
-            )
-
             all_answered = True
+            r_conflict = False  # 핵심 주장과 어긋나는 응답
 
             for i, q in enumerate(r_questions, start=1):
                 ans = st.radio(
@@ -488,6 +480,11 @@ elif mode == "interview":
                 )
                 if ans == "선택 안 함":
                     all_answered = False
+                else:
+                    # 기대 응답: 피의자 → '아니오', 피해자 → '예'
+                    expected = "아니오" if role_key == "suspect" else "예"
+                    if ans != expected:
+                        r_conflict = True
 
             col1, col2 = st.columns(2)
             with col1:
@@ -496,7 +493,18 @@ elif mode == "interview":
             with col2:
                 if st.button("성향 설문(DLCQ) 안내로 ➜"):
                     if not all_answered:
-                        st.error("모든 사건 관련 질문에 대해 '예' 또는 '아니오'를 선택해 주세요.")
+                        st.error("세 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
+                    elif r_conflict:
+                        if role_key == "suspect":
+                            st.error(
+                                "사건 관련 질문(R)에 '예'라고 응답하면 가해 사실을 인정하는 것으로 해석됩니다. "
+                                "이 경우 거짓말탐지 검사의 대상이 될 수 없으므로, 검사관과 상의해 주세요."
+                            )
+                        else:
+                            st.error(
+                                "사건 관련 질문(R)에 '아니오'로 응답하면 앞에서 입력한 피해 주장과 어긋납니다. "
+                                "검사관과 상의해 주세요."
+                            )
                     else:
                         goto("interview_dlcq_intro")
 
@@ -506,13 +514,13 @@ elif mode == "interview":
 
         st.markdown(
             """
-            이제 **성향 설문(DLCQ)** 을 진행합니다.  
+            다음으로, 지금까지의 삶에서 있었던 행동 경험에 대해 묻는  
+            **성향 설문(DLCQ)** 을 진행합니다.
 
-            이 설문은 지금까지의 삶에서 있었던 행동 경험에 대해 묻는 문항들로,  
-            여기에서의 응답은 이후에 사용할 **비교질문(C)** 을 고르는 데에 활용됩니다.
+            이 설문에서 **'예'라고 응답한 문항들** 중 일부가 이후에  
+            **비교질문(C)** 으로 사용됩니다.
 
-            각 문항에 대해 솔직하게 **'예' 또는 '아니오'** 로 응답해 주세요.  
-            (처음에는 모두 '응답 안 함'으로 표시됩니다.)
+            다음 화면에서 각 문항에 대해 솔직하게 예/아니오를 선택해 주세요.
             """
         )
 
@@ -569,14 +577,14 @@ elif mode == "interview":
         else:
             st.markdown(
                 """
-                방금 성향 설문에서 **'예'라고 응답하신 문항들** 중  
-                세 가지를 선택하여 **비교질문(C)** 으로 사용합니다.
+                성향 설문에서 **'예'라고 응답하신 문항들** 중 세 가지를 선택하여  
+                이번 검사에서 사용할 **비교질문(C)** 으로 구성합니다.
 
-                그러나 **본 검사에서는**, 이러한 질문들에 대해서도  
-                모두 **'아니오'** 라고 답변해 주셔야 합니다.
+                비교질문은 검사 절차상 특별한 역할을 하며,  
+                실제 검사에서는 이 질문들에 대해 특정 방식으로 응답하게 됩니다.
 
-                다음 화면에서 선택된 세 가지 문항을 다시 제시해 드립니다.  
-                각 문항에 대해 **'아니오'라고 답해보는 연습**을 하겠습니다.
+                다음 화면에서 선택된 세 문항을 그대로 제시하고,  
+                예/아니오 응답을 연습해 보겠습니다.
                 """
             )
 
@@ -598,17 +606,9 @@ elif mode == "interview":
             if st.button("성향 설문으로 돌아가기"):
                 goto("interview_dlcq")
         else:
-            st.markdown(
-                """
-                아래 세 가지 문항은 이번 검사에서 **비교질문(C)** 으로 사용될 질문들입니다.  
+            all_answered = True
+            all_correct = True
 
-                실제 검사에서는 이 질문들에 대해 모두 **'아니오'** 라고 답변해야 합니다.  
-
-                각 문항을 다시 읽어보시고, 연습 삼아 **'아니오'** 를 선택해 주세요.
-                """
-            )
-
-            all_no = True
             for idx in indices:
                 item = DLCQ_ITEMS[idx]
                 ans = st.radio(
@@ -617,8 +617,11 @@ elif mode == "interview":
                     index=0,
                     key=f"cq_practice_{idx}",
                 )
-                if ans != "아니오":
-                    all_no = False
+                if ans == "선택 안 함":
+                    all_answered = False
+                    all_correct = False
+                elif ans != "아니오":
+                    all_correct = False
 
             col1, col2 = st.columns(2)
             with col1:
@@ -626,8 +629,10 @@ elif mode == "interview":
                     goto("interview_c_intro")
             with col2:
                 if st.button("인적 사항 질문(N) 안내로 ➜"):
-                    if not all_no:
-                        st.error("모든 비교질문에 대해 '아니오'를 선택해야 다음 단계로 진행할 수 있습니다.")
+                    if not all_answered:
+                        st.error("세 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
+                    elif not all_correct:
+                        st.error("비교질문(C)은 연습 단계에서 모두 '아니오'로 연습해야 합니다.")
                     else:
                         goto("interview_n_intro")
 
@@ -637,13 +642,11 @@ elif mode == "interview":
 
         st.markdown(
             """
-            이제 검사에 포함될 **중립 질문(N)** 을 안내해 드리겠습니다.  
+            마지막으로, 피검자님의 인적 사항을 확인하는  
+            **중립 질문(N)** 세 문항을 연습합니다.
 
-            이 질문들은 이름, 성별, 나이와 같이  
-            **사실 그대로의 인적 사항**을 확인하는 문항입니다.
-
-            실제 검사에서는 이 질문들에 대해 모두 **'예'** 라고 답변해야 합니다.  
-            다음 화면에서 세 가지 인적 사항 문항을 연습해 보겠습니다.
+            이름, 성별, 나이와 같이 사실 그대로의 정보를 묻는 질문입니다.  
+            다음 화면에서 세 문항을 제시하고, 예/아니오 응답을 연습해 보겠습니다.
             """
         )
 
@@ -671,25 +674,21 @@ elif mode == "interview":
         ]
         st.session_state["case_info"]["N_questions"] = n_questions
 
-        st.markdown(
-            """
-            아래 질문들은 피검자님의 인적 사항을 확인하는 **중립 질문(N)** 입니다.  
+        all_answered = True
+        all_correct = True
 
-            실제 검사에서는 세 문항 모두 **'예'** 라고 답변하게 됩니다.  
-            각 문항을 읽고 스스로 확인한 뒤, 연습 삼아 **'예'** 를 선택해 주세요.
-            """
-        )
-
-        all_yes = True
-        for i, q in enumerate(n_questions):
+        for i, q in enumerate(n_questions, start=1):
             ans = st.radio(
                 q,
                 ["선택 안 함", "예", "아니오"],
                 index=0,
                 key=f"nq_{i}",
             )
-            if ans != "예":
-                all_yes = False
+            if ans == "선택 안 함":
+                all_answered = False
+                all_correct = False
+            elif ans != "예":
+                all_correct = False
 
         col1, col2 = st.columns(2)
         with col1:
@@ -697,10 +696,12 @@ elif mode == "interview":
                 goto("interview_n_intro")
         with col2:
             if st.button("11문항 최종 연습 안내로 ➜"):
-                if not all_yes:
-                    st.error("모든 중립 질문에 대해 '예'를 선택해야 다음 단계로 진행할 수 있습니다.")
+                if not all_answered:
+                    st.error("세 문항 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
+                elif not all_correct:
+                    st.error("인적 사항 질문(N)은 연습 단계에서 모두 '예'로 응답해야 합니다.")
                 else:
-                    # 여기에서 최종 질문 세트 구성
+                    # 최종 질문 세트 구성
                     info = st.session_state["case_info"]
                     r_set = info.get("R_questions", [])
                     n_set = n_questions
@@ -718,43 +719,38 @@ elif mode == "interview":
 
     # ---------- 13) 11문항 최종 연습 안내 ----------
     elif step == "interview_final_intro":
-        qs = st.session_state.get("question_set", None)
-
         st.title("13. Ophtheon 11문항 최종 연습 안내")
 
-        if not qs:
-            st.error("질문 세트가 생성되지 않았습니다. 이전 단계로 돌아가 주세요.")
+        st.markdown(
+            """
+            이제 실제 검사에 앞서,  
+            Ophtheon 프로토콜에 포함될 **11가지 질문을 한 번에 연습**해 보겠습니다.
+
+            다음 화면에서는 다음 순서대로 문항이 제시됩니다.
+
+            1. 기초 질문 2문항 (I, SR)  
+            2. 인적 사항 질문 3문항 (N1–N3)  
+            3. 비교질문 3문항 (C1–C3)  
+            4. 사건 관련 질문 3문항 (R1–R3)  
+
+            실제 검사라고 생각하시고,  
+            각 문항에 대해 차분히 **'예' 또는 '아니오'** 를 선택해 주세요.
+            """
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
             if st.button("⬅︎ 인적 사항 질문 연습으로 돌아가기"):
                 goto("interview_n_practice")
-        else:
-            st.markdown(
-                """
-                이제 실제 검사에 앞서,  
-                Ophtheon 프로토콜에 포함될 **11가지 질문을 한 번에 연습**해 보겠습니다.
-
-                다음 화면에서는 다음과 같은 구성의 질문이 제시됩니다.
-
-                - 기본 약속 질문: I, SR (각 1문항)  
-                - 인적 사항 질문(N): 3문항  
-                - 비교질문(C): 3문항  
-                - 사건 관련 질문(R): 3문항  
-
-                실제 검사라고 생각하시고, 각 문항에 대해  
-                차분히 **'예' 또는 '아니오'** 를 선택해 주세요.
-                """
-            )
-
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("⬅︎ 인적 사항 질문 연습으로 돌아가기"):
-                    goto("interview_n_practice")
-            with col2:
-                if st.button("11문항 최종 연습 시작하기 ➜"):
-                    goto("interview_final_practice")
+        with col2:
+            if st.button("11문항 최종 연습 시작하기 ➜"):
+                goto("interview_final_practice")
 
     # ---------- 14) 11문항 최종 연습 ----------
     elif step == "interview_final_practice":
         qs = st.session_state.get("question_set", None)
+        info = st.session_state.get("case_info", {})
+        role_key = info.get("role", "suspect")
 
         st.title("14. Ophtheon 11문항 최종 연습")
 
@@ -763,12 +759,9 @@ elif mode == "interview":
             if st.button("⬅︎ 최종 연습 안내로 돌아가기"):
                 goto("interview_final_intro")
         else:
-            st.markdown(
-                """
-                아래 11개 질문은 실제 검사에서 사용될 **최종 질문 세트**입니다.  
-                실제 검사라고 생각하시고, 각 문항에 대해 **'예' 또는 '아니오'** 를 선택해 주세요.
-                """
-            )
+            final_all_answered = True
+            final_all_correct = True
+            r_conflict = False
 
             # I / SR
             ans_I = st.radio(
@@ -777,15 +770,25 @@ elif mode == "interview":
                 index=0,
                 key="final_I",
             )
+            if ans_I == "선택 안 함":
+                final_all_answered = False
+                final_all_correct = False
+            elif ans_I != "예":
+                final_all_correct = False
+
             ans_SR = st.radio(
                 f"SR1. {qs['SR']}",
                 ["선택 안 함", "예", "아니오"],
                 index=0,
                 key="final_SR",
             )
+            if ans_SR == "선택 안 함":
+                final_all_answered = False
+                final_all_correct = False
+            elif ans_SR != "예":
+                final_all_correct = False
 
             # N (3)
-            final_all_answered = True
             for i, q in enumerate(qs["N"], start=1):
                 ans = st.radio(
                     f"N{i}. {q}",
@@ -795,6 +798,9 @@ elif mode == "interview":
                 )
                 if ans == "선택 안 함":
                     final_all_answered = False
+                    final_all_correct = False
+                elif ans != "예":
+                    final_all_correct = False
 
             # C (3)
             for i, q in enumerate(qs["C"], start=1):
@@ -806,8 +812,11 @@ elif mode == "interview":
                 )
                 if ans == "선택 안 함":
                     final_all_answered = False
+                    final_all_correct = False
+                elif ans != "아니오":
+                    final_all_correct = False
 
-            # R (3)
+            # R (3) — 역할에 따라 기대 응답 다름
             for i, q in enumerate(qs["R"], start=1):
                 ans = st.radio(
                     f"R{i}. {q}",
@@ -817,9 +826,12 @@ elif mode == "interview":
                 )
                 if ans == "선택 안 함":
                     final_all_answered = False
-
-            if ans_I == "선택 안 함" or ans_SR == "선택 안 함":
-                final_all_answered = False
+                    final_all_correct = False
+                else:
+                    expected = "아니오" if role_key == "suspect" else "예"
+                    if ans != expected:
+                        final_all_correct = False
+                        r_conflict = True
 
             col1, col2 = st.columns(2)
             with col1:
@@ -829,6 +841,21 @@ elif mode == "interview":
                 if st.button("면담 종료 및 질문 세트 보기 ➜"):
                     if not final_all_answered:
                         st.error("11개 질문 모두에 대해 '예' 또는 '아니오'를 선택해 주세요.")
+                    elif not final_all_correct:
+                        # R 쪽에서의 충돌이면 별도 경고
+                        if r_conflict:
+                            if role_key == "suspect":
+                                st.error(
+                                    "사건 관련 질문(R)에서 '예'라고 응답하면 가해 사실을 인정하는 것으로 해석됩니다. "
+                                    "현재 응답은 검사의 전제와 맞지 않으므로, 검사관과 상의해 주세요."
+                                )
+                            else:
+                                st.error(
+                                    "사건 관련 질문(R)에 대한 응답이 앞에서 입력한 피해 주장과 일치하지 않습니다. "
+                                    "검사관과 상의해 주세요."
+                                )
+                        else:
+                            st.error("Ophtheon 11문항은 설정된 규칙에 따라 응답해야 검사를 완료할 수 있습니다.")
                     else:
                         goto("interview_end")
 
@@ -859,7 +886,7 @@ elif mode == "interview":
             st.markdown("### 2) 최종 11문항 질문 세트")
 
             # 화면에 보기 좋게 출력
-            st.markdown("**I / SR (기본 약속 질문)**")
+            st.markdown("**I / SR (기초 질문)**")
             st.write(f"I1. {qs['I']}")
             st.write(f"SR1. {qs['SR']}")
 
