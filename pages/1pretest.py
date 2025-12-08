@@ -1,33 +1,36 @@
+# 1pretest.py
 import streamlit as st
 import random
 import io
 
 # ---------------------------------------------------------
-# 1. 공통 스타일 (폰트 + 사이드바 예외)
+# 1. 공통 스타일 (폰트 + 사이드바 숨김)
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-/* 전체 폰트 */
-html, body {
+/* 전체 폰트 적용 */
+html, body, [class*="css"] {
     font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
 }
 
-/* 본문 행간 살짝 증가 */
+/* 메인 컨테이너 기본 타이포 */
 .block-container {
     font-size: 16px !important;
-    line-height: 1.65 !important;   /* ★ 행간 여유롭게 */
+    line-height: 1.65 !important;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
 
-/* 제목 크기 */
-h1 { font-size: 30px !important; }
-h2 { font-size: 26px !important; }
-h3 { font-size: 22px !important; }
-h4 { font-size: 18px !important; }
+/* 제목 크기 살짝 정리 */
+h1 { font-size: 30px !important; font-weight: 600 !important; }
+h2 { font-size: 26px !important; font-weight: 600 !important; }
+h3 { font-size: 22px !important; font-weight: 500 !important; }
+h4 { font-size: 18px !important; font-weight: 500 !important; }
 
-/* 본문 UI 요소 폰트 */
+/* 폼/위젯 폰트 */
 .block-container .stRadio label,
 .block-container .stRadio div,
 .block-container .stCheckbox label,
@@ -38,18 +41,22 @@ h4 { font-size: 18px !important; }
 .block-container .stSlider span,
 .block-container .stAlert > div {
     font-size: 16px !important;
-    line-height: 1.55 !important;  /* UI 요소는 너무 띄면 어색 → 유지 */
+    line-height: 1.55 !important;
 }
 
-/* 사이드바 기본 */
-[data-testid="stSidebar"] * {
-    font-size: 15px !important;
-    line-height: 1.4 !important;
+/* 사이드바 완전 숨김 */
+[data-testid="stSidebar"] {
+    display: none !important;
+}
+/* 사이드바 접기/펴기 버튼도 숨김 */
+[data-testid="collapsedControl"] {
+    display: none !important;
 }
 </style>
     """,
     unsafe_allow_html=True,
 )
+
 # ---------------------------------------------------------
 # 2. 상태 초기화
 # ---------------------------------------------------------
