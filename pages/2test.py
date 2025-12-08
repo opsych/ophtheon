@@ -6,7 +6,6 @@ import json
 import tempfile
 import os
 from openai import OpenAI
-
 client = OpenAI()
 
 # ---------------------------------------------------------
