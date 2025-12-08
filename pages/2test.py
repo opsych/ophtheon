@@ -127,27 +127,26 @@ def build_full_script(seq):
     # 베이스라인
     script_parts = []
     script_parts.append(
-        "이제 Ophtheon 자동 검사를 시작하겠습니다. "
+        "이제 옵시언 자동 검사를 시작하겠습니다. "
         "먼저 약 30초 동안 화면 중앙의 십자만 조용히 응시해 주세요. "
         "눈을 자주 깜빡이지 않도록 노력해 주시고, 몸을 움직이지 말아 주세요. "
         "그 후, 열한 개의 질문이 순서대로 재생됩니다. "
-        "각 질문 사이에는 약 15초의 간격이 있습니다. "
         "모든 질문에 대해 또렷한 목소리로 예 또는 아니오라고 대답해 주세요. "
-        "이제 베이스라인을 시작합니다."
+        "이제 시작합니다."
     )
 
     # 질문 11개
     for i, item in enumerate(seq, start=1):
         q_text = item["text"]
         script_parts.append(
-            f"\n\n잠시 후 {i}번째 질문을 드리겠습니다. "
+            f"\n\n잠시 후 질문을 드리겠습니다. "
             "질문이 끝난 뒤 예 또는 아니오라고 대답해 주세요. "
-            f"{i}번째 질문입니다. {q_text}"
+            f"질문 드리겠습다. {q_text}"
         )
 
     # 마지막 마무리
     script_parts.append(
-        "\n\n이상으로 Ophtheon 자동 검사를 모두 마쳤습니다. "
+        "\n\n이상으로 옵시언 자동 검사를 모두 마쳤습니다. "
         "십자 응시를 멈추시고 편안한 자세를 취하셔도 좋습니다."
     )
 
@@ -183,7 +182,7 @@ pretest 단계에서 생성한
 
         full_script = build_full_script(seq)
 
-        st.markdown("질문 세트가 로드되었습니다. 이제 전체 검사 음성을 생성합니다.")
+        st.markdown("질문 세트가 로드되었습니다. 이제 전체 검사 질문을 생성합니다.")
 
         with st.spinner("검사용 음성을 생성하고 있습니다. 잠시만 기다려 주세요..."):
             full_audio = generate_exam_mp3(full_script)
@@ -197,7 +196,7 @@ elif step == "prepare":
     full_audio = st.session_state.get("exam_full_audio", None)
 
     if not full_audio:
-        st.error("검사용 음성이 준비되지 않았습니다. 다시 업로드해 주세요.")
+        st.error("검사용 질문이 준비되지 않았습니다. 다시 업로드해 주세요.")
         if st.button("다시 업로드하기"):
             st.session_state["test_step"] = "upload"
             st.rerun()
@@ -209,10 +208,9 @@ elif step == "prepare":
 이제 Ophtheon 자동 검사가 시작됩니다.
 
 - 화면에는 **회색 배경과 십자(+)만** 표시됩니다.  
-- 오디오를 재생하면,  
-  - 처음에는 약 30초 동안 아무 질문 없이 십자를 응시하는 **베이스라인 구간**이 이어지고  
+- 오디오를 재생한 후, 
+  - 중앙에 나타나는 십자를 응시해야 합니다.  
   - 그 이후, 총 11개의 질문이 자동으로 재생됩니다.  
-- 각 질문 사이에는 약 15초의 간격이 포함되어 있습니다.  
 
 질문을 들을 때마다,  
 **또렷한 목소리로 '예' 또는 '아니오'** 라고 대답해 주세요.
@@ -226,7 +224,7 @@ elif step == "prepare":
             st.rerun()
 
         st.markdown("---")
-        st.markdown("연구자용: 생성된 검사용 오디오를 미리 들어보고 싶다면 아래 플레이어를 사용할 수 있습니다.")
+        st.markdown("생성된 검사용 오디오를 미리 들어보고 싶다면 아래 플레이어를 사용할 수 있습니다.")
         st.audio(full_audio)
 
 # ---------- (3) 실제 검사 화면 ----------
@@ -234,7 +232,7 @@ elif step == "run":
     full_audio = st.session_state.get("exam_full_audio", None)
 
     if not full_audio:
-        st.error("검사용 음성이 준비되지 않았습니다. 다시 업로드해 주세요.")
+        st.error("검사용 질문이 준비되지 않았습니다. 다시 업로드해 주세요.")
         if st.button("다시 업로드하기"):
             st.session_state["test_step"] = "upload"
             st.rerun()
@@ -266,8 +264,7 @@ elif step == "run":
         st.markdown(
             """
 오디오를 재생하면,  
-**베이스라인 안내 → 11개 질문 → 마무리 안내**가  
-순서대로 자동으로 이어집니다.
+검사 안내와 질문이 순서대로 제시됩니다.
 
 검사 중에는 화면 중앙의 십자(+)를 계속 응시하면서,  
 질문을 들을 때마다 또렷하게 **'예' 또는 '아니오'** 라고 대답해 주세요.
