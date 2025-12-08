@@ -601,7 +601,7 @@ elif step == "interview_n_practice":
     n_questions = [
         f"당신의 이름은 {name} 입니까?",
         f"당신의 성별은 {gender} 입니까?",
-        f"당신의 나이는 {age}세 입니까?",
+        f"당신의 나이는 {age}살 입니까?",
     ]
     st.session_state["case_info"]["N_questions"] = n_questions
 
