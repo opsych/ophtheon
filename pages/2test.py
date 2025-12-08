@@ -281,7 +281,7 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
                 """,
                 unsafe_allow_html=True,
             )
-
+st.write("")
         # ---------------- 버튼 영역 ----------------
         col1, col2 = st.columns(2)
         with col1:
