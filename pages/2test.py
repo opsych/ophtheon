@@ -2,39 +2,97 @@ import streamlit as st
 import random
 import io
 import re
-import json
 import tempfile
-import os
+import wave
+from typing import List
+
 from openai import OpenAI
+
 client = OpenAI()
 
 # ---------------------------------------------------------
-# 0. OpenAI TTS: 텍스트 → mp3 파일 생성
+# 0. OpenAI TTS: 텍스트 → WAV 파일 생성
 # ---------------------------------------------------------
-def generate_mp3_from_text(text: str) -> str:
-    """OpenAI TTS로 텍스트를 mp3 파일로 저장하고, 파일 경로를 반환"""
+def generate_tts_wav(text: str) -> str:
+    """
+    OpenAI TTS로 텍스트를 WAV 파일로 저장하고, 파일 경로를 반환.
+    """
     response = client.audio.speech.create(
         model="gpt-4o-mini-tts",
-        voice="alloy",   # 원하면 다른 목소리로 변경 가능
+        voice="alloy",   # 다른 목소리로 바꾸고 싶으면 여기만 수정
         input=text,
+        format="wav",
     )
-    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-    # 응답 객체가 제공하는 메서드로 바로 파일로 저장
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
     response.stream_to_file(tmp_file.name)
     return tmp_file.name
 
 
-def generate_all_question_mp3(seq):
+def concat_with_silence(wav_paths: List[str], silence_secs: List[float]) -> str:
     """
-    seq = [ {"text": ...}, ... 11문항 ]
-    각 질문 텍스트를 mp3로 변환한 파일 경로 리스트 반환
+    여러 WAV 파일을 순서대로 이어 붙이고, 각 파일 뒤에 지정한 길이(초)의 무음을 삽입.
+    - wav_paths: [baseline, q1, q2, ..., q11]
+    - silence_secs: [30, 15, 15, ..., 0]  (각 세그먼트 뒤 무음 길이)
     """
-    mp3_list = []
-    for item in seq:
-        q_text = item["text"]
-        mp3_path = generate_mp3_from_text(q_text)
-        mp3_list.append(mp3_path)
-    return mp3_list
+    assert len(wav_paths) == len(silence_secs), "wav_paths와 silence_secs 길이가 같아야 합니다."
+
+    # 기준 파라미터 얻기 (모든 TTS 출력이 같은 포맷이라고 가정)
+    with wave.open(wav_paths[0], "rb") as w:
+        params = w.getparams()
+        nchannels, sampwidth, framerate, nframes = params[:4]
+
+    def silence_bytes(seconds: float) -> bytes:
+        n_samples = int(framerate * seconds)
+        return b"\x00" * n_samples * nchannels * sampwidth
+
+    out_path = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name
+    with wave.open(out_path, "wb") as out_w:
+        out_w.setparams(params)
+
+        for idx, path in enumerate(wav_paths):
+            with wave.open(path, "rb") as w:
+                data = w.readframes(w.getnframes())
+            out_w.writeframes(data)
+
+            sil_sec = silence_secs[idx]
+            if sil_sec > 0:
+                out_w.writeframes(silence_bytes(sil_sec))
+
+    return out_path
+
+
+def generate_full_exam_wav(seq: List[dict]) -> str:
+    """
+    11문항 시퀀스를 받아서:
+    - 베이스라인 안내 멘트 + 질문 11개를 TTS WAV로 만들고
+    - 베이스라인 뒤 30초, 각 질문 뒤 15초(마지막은 0초) 무음을 삽입해
+      하나의 연속 WAV 파일을 생성하여 경로를 반환.
+    """
+    # 1) 베이스라인 멘트
+    baseline_text = (
+        "이제 자동 검사가 시작됩니다. "
+        "지금부터 30초 동안은 화면 중앙의 십자를 조용히 응시하면서 눈을 깜빡이지 않도록 해 주세요. "
+        "30초가 지난 뒤, 열한 개의 질문이 순서대로 재생됩니다. "
+        "각 질문 사이에는 약 15초의 간격이 있습니다. "
+        "질문을 들을 때마다, 또렷한 목소리로 예 또는 아니오라고 대답해 주세요."
+    )
+    baseline_wav = generate_tts_wav(baseline_text)
+
+    # 2) 각 질문을 TTS WAV로 생성
+    question_wavs = [generate_tts_wav(item["text"]) for item in seq]
+
+    # 3) 모든 세그먼트를 하나의 리스트로
+    all_wavs = [baseline_wav] + question_wavs
+
+    # 4) 각 세그먼트 뒤 넣을 무음 길이 (초)
+    #    - baseline 뒤 30초
+    #    - 각 질문 뒤 15초, 마지막 질문 뒤는 0초
+    silence_secs = [30.0] + [15.0] * len(question_wavs)
+    silence_secs[-1] = 0.0  # 마지막 질문 뒤에는 무음 없음
+
+    # 5) WAV 이어 붙이고 최종 경로 반환
+    full_wav_path = concat_with_silence(all_wavs, silence_secs)
+    return full_wav_path
 
 
 # ---------------------------------------------------------
@@ -90,27 +148,17 @@ h4 { font-size: 18px !important; }
 # 2. 상태 관리
 # ---------------------------------------------------------
 if "test_step" not in st.session_state:
-    st.session_state["test_step"] = "upload"   # "upload" / "preview" / "run"
+    st.session_state["test_step"] = "upload"   # "upload" / "prepare" / "run"
 
 if "exam_core_claim" not in st.session_state:
     st.session_state["exam_core_claim"] = ""
 
 if "exam_questions" not in st.session_state:
-    st.session_state["exam_questions"] = None  # 11문항 순서 리스트
+    st.session_state["exam_questions"] = None  # 11문항 시퀀스
 
-# TTS로 만든 mp3 파일들
-if "exam_baseline_mp3" not in st.session_state:
-    st.session_state["exam_baseline_mp3"] = None
-
-if "exam_question_mp3" not in st.session_state:
-    st.session_state["exam_question_mp3"] = None   # 11개 mp3 경로 리스트
-
-# 검사 진행 상태
-if "exam_phase" not in st.session_state:
-    st.session_state["exam_phase"] = "baseline"    # "baseline" / "questions"
-
-if "exam_q_index" not in st.session_state:
-    st.session_state["exam_q_index"] = 0
+# 하나의 긴 WAV 파일 경로
+if "exam_full_audio" not in st.session_state:
+    st.session_state["exam_full_audio"] = None
 
 
 # ---------------------------------------------------------
@@ -209,81 +257,66 @@ pretest 단계에서 생성한
         st.session_state["exam_core_claim"] = core_claim
         st.session_state["exam_questions"] = seq
 
-        # OpenAI TTS로 baseline 안내 mp3 & 각 질문 mp3 생성
-        baseline_text = "약 30초 이후 검사 질문이 시작됩니다. 질문과 질문 사이에는 15초의 대기시간이 있습니다."
-        baseline_mp3 = generate_mp3_from_text(baseline_text)
-        q_mp3_list = generate_all_question_mp3(seq)
+        st.markdown("질문 세트가 로드되었습니다. 이제 검사용 음성을 생성합니다.")
 
-        st.session_state["exam_baseline_mp3"] = baseline_mp3
-        st.session_state["exam_question_mp3"] = q_mp3_list
-        st.session_state["exam_phase"] = "baseline"
-        st.session_state["exam_q_index"] = 0
+        with st.spinner("검사용 음성을 생성하고 있습니다. 잠시만 기다려 주세요..."):
+            full_audio = generate_full_exam_wav(seq)
 
-        st.session_state["test_step"] = "preview"
+        st.session_state["exam_full_audio"] = full_audio
+        st.session_state["test_step"] = "prepare"
         st.rerun()
 
-# ---------- (2) 질문 세트 미리보기 ----------
-elif step == "preview":
+# ---------- (2) 검사 전 요약 안내 ----------
+elif step == "prepare":
     seq = st.session_state.get("exam_questions", None)
-    core_claim = st.session_state.get("exam_core_claim", "")
+    full_audio = st.session_state.get("exam_full_audio", None)
 
-    if not seq:
-        st.error("질문 세트가 로드되지 않았습니다. 다시 업로드해 주세요.")
+    if not seq or not full_audio:
+        st.error("질문 세트 또는 음성 파일이 준비되지 않았습니다. 다시 업로드해 주세요.")
         if st.button("다시 업로드하기"):
             st.session_state["test_step"] = "upload"
             st.rerun()
     else:
-        st.title("검사 시행 — 질문 세트 확인")
-
-        st.markdown("#### 피검자의 핵심 주장")
-        st.info(core_claim)
-
-        st.markdown("#### 이번 검사에서 사용할 11문항 순서")
-        for i, item in enumerate(seq, start=1):
-            tag = item["type"]
-            idx = item["index"]
-            st.write(f"{i}. [{tag}{idx}] {item['text']}")
+        st.title("검사 시행 — 안내")
 
         st.markdown(
             """
-위 순서로 검사가 진행됩니다.  
+이제 Ophtheon 자동 검사가 시작됩니다.
 
-- 검사 시작 후 **약 30초 동안은 베이스라인 측정 시간**입니다.  
-- 그 이후, 각 문항 사이에는 **약 15초의 대기 시간**을 두고 음성이 재생됩니다.
-(현재 버전에서는 대기시간은 검사관이 직접 맞춰주시면 됩니다.)
+- 화면에는 **회색 배경과 십자(+)만** 표시됩니다.  
+- 오디오를 재생하면,  
+  - 처음 약 30초 동안은 아무 질문 없이 십자를 응시하는 **베이스라인 구간**이 이어지고  
+  - 그 이후, 총 11개의 질문이 자동으로 재생됩니다.  
+- 각 질문 사이에는 약 15초의 간격이 포함되어 있습니다.  
+
+피검자는 오디오에서 질문을 들을 때마다,  
+**또렷한 목소리로 '예' 또는 '아니오'** 라고 대답하면 됩니다.
             """
         )
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("다시 업로드하기"):
-                st.session_state["test_step"] = "upload"
-                st.rerun()
-        with col2:
-            if st.button("검사 시행으로 이동"):
-                st.session_state["test_step"] = "run"
-                st.session_state["exam_phase"] = "baseline"
-                st.session_state["exam_q_index"] = 0
-                st.rerun()
+        st.warning("검사 시작 후에는 오디오를 중간에 멈추지 말고, 끝까지 그대로 재생해 주세요.")
+
+        if st.button("검사 화면으로 이동"):
+            st.session_state["test_step"] = "run"
+            st.rerun()
+
+        st.markdown("---")
+        st.markdown("연구자용: 생성된 검사용 오디오를 미리 들어보고 싶다면 아래 플레이어를 사용할 수 있습니다.")
+        st.audio(full_audio)
 
 # ---------- (3) 실제 검사 화면 ----------
 elif step == "run":
-    seq = st.session_state.get("exam_questions", None)
-    core_claim = st.session_state.get("exam_core_claim", "")
-    baseline_mp3 = st.session_state.get("exam_baseline_mp3", None)
-    q_mp3_list = st.session_state.get("exam_question_mp3", None)
-    phase = st.session_state.get("exam_phase", "baseline")
-    q_idx = st.session_state.get("exam_q_index", 0)
+    full_audio = st.session_state.get("exam_full_audio", None)
 
-    if not seq or not q_mp3_list:
-        st.error("질문 세트가 로드되지 않았습니다. 다시 업로드해 주세요.")
+    if not full_audio:
+        st.error("검사용 음성이 준비되지 않았습니다. 다시 업로드해 주세요.")
         if st.button("다시 업로드하기"):
             st.session_state["test_step"] = "upload"
             st.rerun()
     else:
-        st.title("검사 시행 — 실시간 진행")
+        st.title("검사 시행 — 자동 진행")
 
-        # ---------------- 회색 화면 (십자 응시) ----------------
+        # 회색 화면 + 십자 응시
         st.markdown(
             """
 <div style="
@@ -305,78 +338,21 @@ elif step == "run":
             unsafe_allow_html=True,
         )
 
-        # ---------------- 검사 단계 안내 + 오디오 ----------------
-        if phase == "baseline":
-            st.markdown(
-                """
-**1) 베이스라인 측정 단계 (약 30초)**  
+        st.markdown(
+            """
+오디오를 재생하면,  
+**베이스라인 → 11개 질문 → 각 질문 사이의 무음**이  
+순서대로 자동으로 이어집니다.
 
-- 위 십자(+)를 응시하면서,  
-- 아래 음성을 재생한 뒤 **약 30초간** 정면 응시를 유지해 주세요.
-                """
-            )
-            if baseline_mp3:
-                st.audio(baseline_mp3)
+검사 중에는 화면 중앙의 십자(+)를 계속 응시하면서,  
+질문을 들을 때마다 또렷하게 **'예' 또는 '아니오'** 라고 대답해 주세요.
+            """
+        )
 
-            st.info("검사관: baseline 음성을 재생한 뒤, 약 30초 경과 후 '질문 시작' 버튼을 눌러주세요.")
+        st.audio(full_audio)
 
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("← 질문 세트 확인으로 돌아가기"):
-                    st.session_state["test_step"] = "preview"
-                    st.rerun()
-            with col2:
-                if st.button("질문 시작 ➜"):
-                    st.session_state["exam_phase"] = "questions"
-                    st.session_state["exam_q_index"] = 0
-                    st.rerun()
-
-        elif phase == "questions":
-            # 현재 질문 정보
-            item = seq[q_idx]
-            q_text = item["text"]
-            q_audio = q_mp3_list[q_idx]
-
-            st.markdown(
-                f"""
-**2) 질문 단계 — 문항 {q_idx + 1} / {len(seq)}**  
-
-검사관은 아래 질문을 확인한 뒤,  
-AI 음성을 함께 재생하여 피검자에게 들려주고,  
-피검자의 육성 응답과 동공 반응을 관찰합니다.
-                """
-            )
-
-            st.markdown(f"**질문 텍스트 (검사관용)**  \n{q_text}")
-
-            st.audio(q_audio)
-
-            st.info(
-                """
-검사관: 문항 음성을 재생한 뒤,  
-피검자가 '예' 또는 '아니오'라고 대답하게 하고,  
-약 15초의 간격을 두고 다음 문항으로 넘어가 주세요.
-                """
-            )
-
-            col1, col2, col3 = st.columns([1, 1, 1])
-            with col1:
-                if st.button("← 이전 문항"):
-                    if q_idx > 0:
-                        st.session_state["exam_q_index"] = q_idx - 1
-                        st.rerun()
-                    else:
-                        st.session_state["exam_phase"] = "baseline"
-                        st.rerun()
-            with col3:
-                if st.button("다음 문항 →"):
-                    if q_idx < len(seq) - 1:
-                        st.session_state["exam_q_index"] = q_idx + 1
-                        st.rerun()
-                    else:
-                        st.success("11문항 검사가 모두 종료되었습니다.")
-                        if st.button("검사 종료"):
-                            st.session_state["test_step"] = "upload"
-                            st.session_state["exam_phase"] = "baseline"
-                            st.session_state["exam_q_index"] = 0
-                            st.rerun()
+        st.markdown("---")
+        if st.button("검사 종료"):
+            st.session_state["test_step"] = "upload"
+            st.session_state["exam_full_audio"] = None
+            st.rerun()
