@@ -183,7 +183,7 @@ pretest 단계에서 생성한
 
         st.markdown("질문 세트가 로드되었습니다. 이제 전체 검사 질문을 생성합니다.")
 
-        with st.spinner("검사용 음성을 생성하고 있습니다. 잠시만 기다려 주세요..."):
+        with st.spinner("검사용 질문을 생성하고 있습니다. 잠시만 기다려 주세요..."):
             full_audio = generate_exam_mp3(full_script)
 
         st.session_state["exam_full_audio"] = full_audio
