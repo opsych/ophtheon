@@ -3,7 +3,6 @@ import random
 import io
 import re
 import json
-from gtts import gTTS
 import tempfile
 import os
 
