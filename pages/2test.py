@@ -3,7 +3,17 @@ import random
 import io
 import re
 import json
+from gtts import gTTS
+import tempfile
+import os
 
+def generate_mp3_from_text(text):
+    """주어진 텍스트를 gTTS로 mp3 파일로 변환하고, 파일 경로를 반환"""
+    tts = gTTS(text=text, lang="ko")
+    tmp_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
+    tts.save(tmp_path)
+    return tmp_path
+    
 # ---------------------------------------------------------
 # 1. 공통 스타일 (pretest와 동일 톤)
 # ---------------------------------------------------------
@@ -72,6 +82,7 @@ if "exam_started" not in st.session_state:
 # ---------------------------------------------------------
 # 3. 텍스트 파일 파싱 함수
 # ---------------------------------------------------------
+
 def parse_question_set_txt(text: str):
     """
     ophtheon_question_set.txt 형식의 텍스트를 파싱해서
