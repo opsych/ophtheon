@@ -3,16 +3,32 @@ import random
 import io
 import re
 import json
+from gtts import gTTS
 import tempfile
 import os
 
-def generate_mp3_from_text(text):
+# ---------------------------------------------------------
+# 0. mp3 생성 함수들 (gTTS)
+# ---------------------------------------------------------
+def generate_mp3_from_text(text: str) -> str:
     """주어진 텍스트를 gTTS로 mp3 파일로 변환하고, 파일 경로를 반환"""
     tts = gTTS(text=text, lang="ko")
-    tmp_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
-    tts.save(tmp_path)
-    return tmp_path
-    
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+    tmp_file.close()
+    tts.save(tmp_file.name)
+    return tmp_file.name
+
+
+def generate_all_question_mp3(seq):
+    """11문항 시퀀스에서 각 질문 텍스트를 mp3로 변환한 파일 경로 리스트 반환"""
+    mp3_list = []
+    for item in seq:
+        q_text = item["text"]
+        mp3_path = generate_mp3_from_text(q_text)
+        mp3_list.append(mp3_path)
+    return mp3_list
+
+
 # ---------------------------------------------------------
 # 1. 공통 스타일 (pretest와 동일 톤)
 # ---------------------------------------------------------
@@ -74,14 +90,24 @@ if "exam_core_claim" not in st.session_state:
 if "exam_questions" not in st.session_state:
     st.session_state["exam_questions"] = None  # 11문항 순서 리스트
 
-if "exam_started" not in st.session_state:
-    st.session_state["exam_started"] = False
+# gTTS로 만든 mp3 파일들
+if "exam_baseline_mp3" not in st.session_state:
+    st.session_state["exam_baseline_mp3"] = None
+
+if "exam_question_mp3" not in st.session_state:
+    st.session_state["exam_question_mp3"] = None   # 11개 mp3 경로 리스트
+
+# 검사 진행 상태
+if "exam_phase" not in st.session_state:
+    st.session_state["exam_phase"] = "baseline"    # "baseline" / "questions"
+
+if "exam_q_index" not in st.session_state:
+    st.session_state["exam_q_index"] = 0
 
 
 # ---------------------------------------------------------
 # 3. 텍스트 파일 파싱 함수
 # ---------------------------------------------------------
-
 def parse_question_set_txt(text: str):
     """
     ophtheon_question_set.txt 형식의 텍스트를 파싱해서
@@ -161,7 +187,7 @@ if step == "upload":
     st.markdown(
         """
 pretest 단계에서 생성한  
-텍스트(.txt) 파일을 업로드해 주세요.
+**질문 세트 텍스트(.txt)** 파일을 업로드해 주세요.
         """
     )
 
@@ -174,6 +200,17 @@ pretest 단계에서 생성한
 
         st.session_state["exam_core_claim"] = core_claim
         st.session_state["exam_questions"] = seq
+
+        # gTTS로 baseline 안내 mp3 & 각 질문 mp3 생성
+        baseline_text = "약 30초 이후 검사 질문이 시작됩니다. 질문과 질문 사이에는 15초의 대기시간이 있습니다."
+        baseline_mp3 = generate_mp3_from_text(baseline_text)
+        q_mp3_list = generate_all_question_mp3(seq)
+
+        st.session_state["exam_baseline_mp3"] = baseline_mp3
+        st.session_state["exam_question_mp3"] = q_mp3_list
+        st.session_state["exam_phase"] = "baseline"
+        st.session_state["exam_q_index"] = 0
+
         st.session_state["test_step"] = "preview"
         st.rerun()
 
@@ -204,7 +241,8 @@ elif step == "preview":
 위 순서로 검사가 진행됩니다.  
 
 - 검사 시작 후 **약 30초 동안은 베이스라인 측정 시간**입니다.  
-- 그 이후, 각 문항 사이에는 **약 15초의 대기 시간**이 있습니다.
+- 그 이후, 각 문항 사이에는 **약 15초의 대기 시간**을 두고 음성이 재생됩니다.
+(현재 버전에서는 대기시간은 검사관이 직접 맞춰주시면 됩니다.)
             """
         )
 
@@ -214,67 +252,32 @@ elif step == "preview":
                 st.session_state["test_step"] = "upload"
                 st.rerun()
         with col2:
-            if st.button("검사 시행"):
+            if st.button("검사 시행으로 이동"):
                 st.session_state["test_step"] = "run"
-                st.session_state["exam_started"] = False
+                st.session_state["exam_phase"] = "baseline"
+                st.session_state["exam_q_index"] = 0
                 st.rerun()
 
-# ---------- (3) 실제 검사 화면 ----------
 # ---------- (3) 실제 검사 화면 ----------
 elif step == "run":
     seq = st.session_state.get("exam_questions", None)
     core_claim = st.session_state.get("exam_core_claim", "")
+    baseline_mp3 = st.session_state.get("exam_baseline_mp3", None)
+    q_mp3_list = st.session_state.get("exam_question_mp3", None)
+    phase = st.session_state.get("exam_phase", "baseline")
+    q_idx = st.session_state.get("exam_q_index", 0)
 
-    if not seq:
+    if not seq or not q_mp3_list:
         st.error("질문 세트가 로드되지 않았습니다. 다시 업로드해 주세요.")
         if st.button("다시 업로드하기"):
             st.session_state["test_step"] = "upload"
-            st.session_state["exam_started"] = False
             st.rerun()
     else:
         st.title("검사 시행 — 실시간 진행")
 
-        exam_started = st.session_state.get("exam_started", False)
-
-        # 시작 전 안내 텍스트
-        if not exam_started:
-            st.markdown(
-                """
-AI 검사관의 안내에 따라 **정면을 응시**하고,  
-각 문항에 대해 육성으로 '예' 또는 '아니오'라고 답변해 주세요.
-                """
-            )
-
-        # ---------------- 회색 화면 ----------------
-        if not exam_started:
-            # 시작 전: 설명 텍스트가 있는 연한 회색 박스
-            st.markdown(
-                """
-<div style="
-    background-color:#f2f2f2;
-    border-radius:16px;
-    padding:150px;
-    text-align:center;
-    min-height:60vh;
-    margin-bottom:30px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;">
-  <div style="font-size:22px; font-weight:500; margin-bottom:12px;">
-    검사 시작 버튼을 누르면 안내 음성이 재생되고,  
-    약 30초 후 첫 번째 질문이 시작됩니다.
-  </div>
-  <div style="font-size:15px; color:#555555;">
-    검사 화면에 표시되는 십자(+)를 응시해야 합니다.
-  </div>
-</div>
-                """,
-                unsafe_allow_html=True,
-            )
-        else:
-            # 검사 시작 후: 진짜 검사 화면 (125,125,125 회색 + 십자)
-            st.markdown(
-                """
+        # ---------------- 회색 화면 (십자 응시) ----------------
+        st.markdown(
+            """
 <div style="
     background-color: rgb(125,125,125);
     border-radius:16px;
@@ -290,64 +293,84 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
     +
   </div>
 </div>
-                """,
-                unsafe_allow_html=True,
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # ---------------- 검사 단계 안내 + 오디오 ----------------
+        if phase == "baseline":
+            st.markdown(
+                """
+**1) 베이스라인 측정 단계 (약 30초)**  
+
+- 위 십자(+)를 응시하면서,  
+- 아래 음성을 재생한 뒤 **약 30초간** 정면 응시를 유지해 주세요.
+                """
             )
+            if baseline_mp3:
+                st.audio(baseline_mp3)
 
-        # ---------------- 버튼 영역 ----------------
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("돌아가기"):
-                st.session_state["test_step"] = "preview"
-                st.session_state["exam_started"] = False
-                st.rerun()
+            st.info("검사관: baseline 음성을 재생한 뒤, 약 30초 경과 후 '질문 시작' 버튼을 눌러주세요.")
 
-        with col2:
-            # 시작 전에는 "검사 시작" 버튼 표시, 시작 후에는 숨김
-            if not exam_started:
-                if st.button("검사 시작"):
-                    st.session_state["exam_started"] = True
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("← 질문 세트 확인으로 돌아가기"):
+                    st.session_state["test_step"] = "preview"
+                    st.rerun()
+            with col2:
+                if st.button("질문 시작 ➜"):
+                    st.session_state["exam_phase"] = "questions"
+                    st.session_state["exam_q_index"] = 0
                     st.rerun()
 
-        # ---------------- 검사 시작 후: JS TTS 스케줄링 ----------------
-        if exam_started:
-            # 질문 텍스트 배열
-            question_texts = [item["text"] for item in seq]
-
-            # Python 리스트 → JS용 JSON 문자열
-            questions_js = json.dumps(question_texts, ensure_ascii=False)
+        elif phase == "questions":
+            # 현재 질문 정보
+            item = seq[q_idx]
+            q_text = item["text"]
+            q_audio = q_mp3_list[q_idx]
 
             st.markdown(
                 f"""
-<script>
-const questions = {questions_js};
-const baselineMs = 30000;  // 30초 베이스라인
-const gapMs = 15000;       // 문항 사이 15초 대기
+**2) 질문 단계 — 문항 {q_idx + 1} / {len(seq)}**  
 
-function speak(text) {{
-    try {{
-        window.speechSynthesis.cancel();  // 이전 음성 중단
-        var msg = new SpeechSynthesisUtterance(text);
-        msg.lang = "ko-KR";
-        window.speechSynthesis.speak(msg);
-    }} catch (e) {{
-        console.log(e);
-    }}
-}}
-
-// 검사 안내 음성 (baseline 시작)
-speak("약 30초 이후 검사 질문이 시작됩니다. 질문과 질문 사이에는 15초의 대기시간이 있습니다.");
-
-// 30초 대기 후 첫 번째 질문, 이후 15초 간격으로 다음 질문
-let t = baselineMs;
-
-questions.forEach((q, idx) => {{
-    setTimeout(() => {{
-        speak(q);
-    }}, t);
-    t += gapMs;
-}});
-</script>
-                """,
-                unsafe_allow_html=True,
+검사관은 아래 질문을 확인한 뒤,  
+피검자에게 **또렷하게 읽어주고**, 음성을 재생한 상태에서  
+피검자의 육성 응답과 동공 반응을 관찰합니다.
+                """
             )
+
+            st.markdown(f"**질문 텍스트 (검사관용)**  \n{q_text}")
+
+            st.audio(q_audio)
+
+            st.info(
+                """
+검사관: 문항 음성을 재생한 뒤,  
+피검자가 '예' 또는 '아니오'라고 대답하게 하고,  
+약 15초의 간격을 두고 다음 문항으로 넘어가 주세요.
+                """
+            )
+
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                if st.button("← 이전 문항"):
+                    if q_idx > 0:
+                        st.session_state["exam_q_index"] = q_idx - 1
+                        st.rerun()
+                    else:
+                        # 첫 문항에서 이전으로 가면 baseline 안내로 되돌릴 수도 있음
+                        st.session_state["exam_phase"] = "baseline"
+                        st.rerun()
+            with col3:
+                if st.button("다음 문항 →"):
+                    if q_idx < len(seq) - 1:
+                        st.session_state["exam_q_index"] = q_idx + 1
+                        st.rerun()
+                    else:
+                        # 마지막 문항 이후
+                        st.success("11문항 검사가 모두 종료되었습니다.")
+                        if st.button("검사 종료 및 처음으로 돌아가기"):
+                            st.session_state["test_step"] = "upload"
+                            st.session_state["exam_phase"] = "baseline"
+                            st.session_state["exam_q_index"] = 0
+                            st.rerun()
