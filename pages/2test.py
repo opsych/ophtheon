@@ -243,9 +243,9 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
 <div style="
     background-color:#f2f2f2;
     border-radius:16px;
-    padding:160px 120px;
+    padding:200px;
     text-align:center;
-    min-height:300px;
+    min-height:70vh;
     display:flex;
     flex-direction:column;
     justify-content:center;">
@@ -267,7 +267,7 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
 <div style="
     background-color: rgb(125,125,125);
     border-radius:16px;
-    padding:160px 120px;
+    padding:200px;
     text-align:center;
     min-height:300px;
     display:flex;
