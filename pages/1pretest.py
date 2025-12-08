@@ -834,4 +834,4 @@ Ophtheon 검사 전 안내 및 연습이 모두 종료되었습니다.
             goto("interview_final_practice")
     with col2:
         if st.button("home"):
-            st.switch_page("ophtheon/app.py")
+            st.switch_page("app.py")
