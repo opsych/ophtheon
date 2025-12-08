@@ -3,24 +3,33 @@ import random
 import io
 import re
 import json
-from gtts import gTTS
 import tempfile
 import os
+from openai import OpenAI
+
+client = OpenAI()
 
 # ---------------------------------------------------------
-# 0. mp3 생성 함수들 (gTTS)
+# 0. OpenAI TTS: 텍스트 → mp3 파일 생성
 # ---------------------------------------------------------
 def generate_mp3_from_text(text: str) -> str:
-    """주어진 텍스트를 gTTS로 mp3 파일로 변환하고, 파일 경로를 반환"""
-    tts = gTTS(text=text, lang="ko")
+    """주어진 텍스트를 OpenAI TTS로 mp3 파일로 변환하고, 파일 경로를 반환"""
+    response = client.audio.speech.create(
+        model="gpt-4o-mini-tts",
+        voice="alloy",   # 목소리 타입 (원하면 바꿀 수 있음)
+        input=text,
+    )
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-    tmp_file.close()
-    tts.save(tmp_file.name)
+    with open(tmp_file.name, "wb") as f:
+        f.write(response)  # response는 바로 bytes로 취급 가능
     return tmp_file.name
 
 
 def generate_all_question_mp3(seq):
-    """11문항 시퀀스에서 각 질문 텍스트를 mp3로 변환한 파일 경로 리스트 반환"""
+    """
+    seq = [ {"text": ...}, ... 11문항 ]
+    각 질문 텍스트를 mp3로 변환한 파일 경로 리스트 반환
+    """
     mp3_list = []
     for item in seq:
         q_text = item["text"]
@@ -90,7 +99,7 @@ if "exam_core_claim" not in st.session_state:
 if "exam_questions" not in st.session_state:
     st.session_state["exam_questions"] = None  # 11문항 순서 리스트
 
-# gTTS로 만든 mp3 파일들
+# TTS로 만든 mp3 파일들
 if "exam_baseline_mp3" not in st.session_state:
     st.session_state["exam_baseline_mp3"] = None
 
@@ -201,7 +210,7 @@ pretest 단계에서 생성한
         st.session_state["exam_core_claim"] = core_claim
         st.session_state["exam_questions"] = seq
 
-        # gTTS로 baseline 안내 mp3 & 각 질문 mp3 생성
+        # OpenAI TTS로 baseline 안내 mp3 & 각 질문 mp3 생성
         baseline_text = "약 30초 이후 검사 질문이 시작됩니다. 질문과 질문 사이에는 15초의 대기시간이 있습니다."
         baseline_mp3 = generate_mp3_from_text(baseline_text)
         q_mp3_list = generate_all_question_mp3(seq)
@@ -334,7 +343,7 @@ elif step == "run":
 **2) 질문 단계 — 문항 {q_idx + 1} / {len(seq)}**  
 
 검사관은 아래 질문을 확인한 뒤,  
-피검자에게 **또렷하게 읽어주고**, 음성을 재생한 상태에서  
+AI 음성을 함께 재생하여 피검자에게 들려주고,  
 피검자의 육성 응답과 동공 반응을 관찰합니다.
                 """
             )
@@ -358,7 +367,6 @@ elif step == "run":
                         st.session_state["exam_q_index"] = q_idx - 1
                         st.rerun()
                     else:
-                        # 첫 문항에서 이전으로 가면 baseline 안내로 되돌릴 수도 있음
                         st.session_state["exam_phase"] = "baseline"
                         st.rerun()
             with col3:
@@ -367,9 +375,8 @@ elif step == "run":
                         st.session_state["exam_q_index"] = q_idx + 1
                         st.rerun()
                     else:
-                        # 마지막 문항 이후
                         st.success("11문항 검사가 모두 종료되었습니다.")
-                        if st.button("검사 종료 및 처음으로 돌아가기"):
+                        if st.button("검사 종료"):
                             st.session_state["test_step"] = "upload"
                             st.session_state["exam_phase"] = "baseline"
                             st.session_state["exam_q_index"] = 0
