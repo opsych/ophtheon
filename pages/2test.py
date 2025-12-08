@@ -12,15 +12,15 @@ client = OpenAI()
 # 0. OpenAI TTS: 텍스트 → mp3 파일 생성
 # ---------------------------------------------------------
 def generate_mp3_from_text(text: str) -> str:
-    """주어진 텍스트를 OpenAI TTS로 mp3 파일로 변환하고, 파일 경로를 반환"""
+    """OpenAI TTS로 텍스트를 mp3 파일로 저장하고, 파일 경로를 반환"""
     response = client.audio.speech.create(
         model="gpt-4o-mini-tts",
-        voice="alloy",   # 목소리 타입 (원하면 바꿀 수 있음)
+        voice="alloy",   # 원하면 다른 목소리로 변경 가능
         input=text,
     )
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-    with open(tmp_file.name, "wb") as f:
-        f.write(response)  # response는 바로 bytes로 취급 가능
+    # 응답 객체가 제공하는 메서드로 바로 파일로 저장
+    response.stream_to_file(tmp_file.name)
     return tmp_file.name
 
 
