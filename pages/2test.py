@@ -23,30 +23,53 @@ def generate_exam_mp3(full_script: str) -> str:
 
 
 # ---------------------------------------------------------
-# 1. 스타일
+# 1. 스타일 (폰트 + 사이드바 숨김)
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Nanum+Gothic:wght@400;700&display=swap');
 
-html, body {
+/* 전체 폰트 적용 */
+html, body, [class*="css"] {
     font-family: 'Sora', 'Nanum Gothic', sans-serif !important;
 }
 
+/* 메인 컨테이너 타이포 / 여백 */
 .block-container {
     font-size: 16px !important;
     line-height: 1.65 !important;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
 
-h1 { font-size: 30px !important; }
-h2 { font-size: 26px !important; }
-h3 { font-size: 22px !important; }
-h4 { font-size: 18px !important; }
+/* 제목 크기 정리 */
+h1 { font-size: 30px !important; font-weight: 600 !important; }
+h2 { font-size: 26px !important; font-weight: 600 !important; }
+h3 { font-size: 22px !important; font-weight: 500 !important; }
+h4 { font-size: 18px !important; font-weight: 500 !important; }
 
-[data-testid="stSidebar"] * {
-    font-size: 15px !important;
-    line-height: 1.4 !important;
+/* 폼/위젯 폰트 */
+.block-container .stRadio label,
+.block-container .stRadio div,
+.block-container .stCheckbox label,
+.block-container .stTextInput input,
+.block-container .stSelectbox div,
+.block-container .stTextArea textarea,
+.block-container .stSlider label,
+.block-container .stSlider span,
+.block-container .stAlert > div {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+}
+
+/* 사이드바 완전 숨김 */
+[data-testid="stSidebar"] {
+    display: none !important;
+}
+/* 접기/펴기 버튼도 숨김 */
+[data-testid="collapsedControl"] {
+    display: none !important;
 }
 </style>
     """,
@@ -259,7 +282,8 @@ elif step == "run":
     +
   </div>
 </div>
-            """,
+            """
+            ,
             unsafe_allow_html=True,
         )
 
@@ -275,7 +299,10 @@ elif step == "run":
         st.audio(full_audio)
 
         st.markdown("---")
-        if st.button("검사 종료"):
-            st.session_state["test_step"] = "upload"
-            st.session_state["exam_full_audio"] = None
-            st.rerun()
+if st.button("검사 종료"):
+    # 검사 상태 초기화
+    st.session_state["test_step"] = "upload"
+    st.session_state["exam_full_audio"] = None
+    
+    # 홈(app.py)로 이동
+    st.switch_page("app.py")
