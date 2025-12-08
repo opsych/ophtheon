@@ -188,6 +188,11 @@ if step == "interview_info":
             "사건의 세부유형을 선택해 주세요.",
             ["폭행", "상해", "협박", "체포·감금", "기타"],
         )
+    elif offense_category == "재산범죄":
+        offense_type = st.selectbox(
+            "사건의 세부유형을 선택해 주세요.",
+            ["사기", "횡령", "배임"],
+        )
     elif offense_category == "실험참여":
         offense_type = st.selectbox(
             "사건의 세부유형을 선택해 주세요.",
