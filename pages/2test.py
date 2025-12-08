@@ -246,6 +246,7 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
     padding:150px;
     text-align:center;
     min-height:60vh;
+    margin-bottom:40px;
     display:flex;
     flex-direction:column;
     justify-content:center;">
@@ -270,6 +271,7 @@ AI 검사관의 안내에 따라 **정면을 응시**하고,
     padding:150px;
     text-align:center;
     min-height:60vh;
+    margin-bottom:40px;
     display:flex;
     flex-direction:column;
     justify-content:center;
