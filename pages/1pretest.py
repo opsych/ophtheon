@@ -170,21 +170,19 @@ if step == "interview_info":
             "폭력범죄",
             "재산범죄",
             "공무원범죄",
-            "성매매",
-            "마약",
             "기타",
         ],
     )
 
-    if offense_category == "성범죄":
+    if offense_category == "실험참여":
+        offense_type = st.selectbox(
+            "사건의 세부유형을 선택해 주세요.",
+            ["빨간 버튼을 클릭", "인형을 폭행"],
+        )
+    elif offense_category == "성범죄":
         offense_type = st.selectbox(
             "사건의 세부유형을 선택해 주세요.",
             ["성희롱", "강제추행", "강간", "불법촬영"],
-        )
-    elif offense_category == "실험참여":
-        offense_type = st.selectbox(
-            "사건의 세부유형을 선택해 주세요.",
-            ["빨간 버튼을 클릭"],
         )
     elif offense_category == "폭력범죄":
         offense_type = st.selectbox(
@@ -211,7 +209,7 @@ if step == "interview_info":
     if offense_type == "기타":
         offense_free = st.text_input(
             "어떤 행위에 관한 사건인가요?",
-            placeholder="행위를 단어로 적어주세요.",
+            placeholder="마약류 투약, 마약류 밀매, 미성년자 유인, 성매매 등",
         )
 
     if offense_type == "기타":
