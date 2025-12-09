@@ -59,9 +59,9 @@ st.markdown(
 )
 
 st.info(
-    "아직 연구중인 기능이지만 Ophtheon의 목표는"
-    "Ophtheon의 목표는, AI 검사관이 진행하는 데이터 기반 자동 판정입니다."
-])
+    "아직 연구중인 기능이지만 Ophtheon의 목표는,"
+    "AI 검사관이 진행하는 데이터 기반 자동 판정입니다."
+)
 
 st.write("")
 st.markdown("---")
