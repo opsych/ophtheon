@@ -106,4 +106,4 @@ with col3:
     )
 
 st.write("")
-st.caption("© 2025 Ophtheon · Y. Cho & J. Lee")
+st.caption("© 2025 Ophtheon · J. Lee & Y. Cho")
