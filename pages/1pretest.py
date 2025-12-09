@@ -580,8 +580,12 @@ elif step == "interview_c_practice":
                 all_correct = False
 
 
-        st.write("위 질문 세가지는 잘 기억해 두셨다가,  
-        최종 질문 연습과 본 검사에서도 계속 동일하게 답해주셔야 합니다.")
+        st.markdown(
+            """
+        위 질문 세가지는 잘 기억해 두셨다가,  
+        최종 질문 연습과 본 검사에서도 계속 동일하게 답해주셔야 합니다.
+        """
+        )
         
         col1, col2 = st.columns(2)
         with col1:
