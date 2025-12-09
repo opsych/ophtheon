@@ -198,6 +198,11 @@ if step == "interview_info":
             "사건의 세부유형을 선택해 주세요.",
             ["빨간 버튼을 클릭"],
         )
+    elif offense_category == "공무원범죄":
+        offense_type = st.selectbox(
+            "사건의 세부유형을 선택해 주세요.",
+            ["직무 유기", "직권 남용", "비밀 누설", "선거 방해", "뇌물 요구", "뇌물 수수", "뇌물 공여"],
+        )
     else:
         offense_type = st.selectbox(
             "사건의 세부유형을 선택해 주세요.",
